@@ -1,40 +1,53 @@
 package termproject;
 
-import java.awt.FlowLayout;
+import net.miginfocom.swing.MigLayout;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JCheckBox;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JRadioButton;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 public class MainWindow extends JFrame {
 	
-	private JLabel nameLabel = new JLabel("Name");
-	private JTextField nameTextField = new JTextField(20);
-	private JCheckBox qualifiedCheckBox = new JCheckBox("Qualified");
-	private JCheckBox completedCheckBox = new JCheckBox("Completed");
-	private JRadioButton primaryRadioButton = new JRadioButton("Primary");
-	private JRadioButton secondaryRadioButton = new JRadioButton("Secondary");
-	private JRadioButton thirdLevelRadioButton = new JRadioButton("Third-level");
-	private ButtonGroup educationLevelButtonGroup = new ButtonGroup();
+	private JMenuBar menubar = new JMenuBar();
+	private JMenu editMenu = new JMenu("Edit");
+	private JMenu aboutMenu = new JMenu("About");
+	private JMenuItem doneMenuButton = new JMenuItem("Done/undone");
+	private JMenuItem addMenuButton = new JMenuItem("Add");
+	private JMenuItem deleteMenuButton = new JMenuItem("Delete");
+	private JMenuItem editMenuButton = new JMenuItem("Edit");
+	private JMenuItem aboutMenuButton = new JMenuItem("About");
+	private JButton doneUndoneButton = new JButton("Done/Undone");
+	private JButton addButton = new JButton("Add");
+	private JButton deleteButton = new JButton("Delete");
+	private JButton editButton = new JButton("Edit");
+	private List<Task> tasks = new ArrayList<Task>();
 	
-	public MainWindow() {
-		this.setLayout(new FlowLayout());
+	public MainWindow(String title) {
+		super(title);
+		this.setLayout(new MigLayout("insets 20"));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		this.add(nameLabel);
-		this.add(nameTextField);
-		this.add(qualifiedCheckBox);
-		this.add(completedCheckBox);
-		this.add(primaryRadioButton);
-		this.add(secondaryRadioButton);
-		this.add(thirdLevelRadioButton);
-		educationLevelButtonGroup.add(primaryRadioButton);
-		educationLevelButtonGroup.add(secondaryRadioButton);
-		educationLevelButtonGroup.add(thirdLevelRadioButton);
-		primaryRadioButton.setSelected(true);
+		this.setJMenuBar(menubar);
+		menubar.add(editMenu);
+		editMenu.add(doneMenuButton);
+		editMenu.add(addMenuButton);
+		editMenu.add(editMenuButton);
+		editMenu.add(deleteMenuButton);
+		menubar.add(aboutMenu);
+		aboutMenu.add(aboutMenuButton);
+		this.add(doneUndoneButton);
+		this.add(addButton, "tag add");
+		this.add(editButton, "tag edit");
+		this.add(deleteButton, "tag delete, wrap");
 	}
 	
 	public static void main(String[] args) {
@@ -44,8 +57,8 @@ public class MainWindow extends JFrame {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		MainWindow window = new MainWindow();
-		window.setSize(500, 300);
+		MainWindow window = new MainWindow("ToDo List");
+		window.pack();
 		window.setLocationRelativeTo(null);
 		window.setVisible(true);
 	}
