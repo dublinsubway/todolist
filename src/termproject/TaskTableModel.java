@@ -1,5 +1,7 @@
 package termproject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -8,6 +10,7 @@ public class TaskTableModel extends AbstractTableModel {
 
 	private List<Task> tasks;
 	private String[] columnNames = {"Task description", "Due date"};
+	private DateFormat df = new SimpleDateFormat("dd/MM/YYYY HH:mm");
 	
 	public TaskTableModel(List<Task> tasks) {
 		this.tasks = tasks;
@@ -36,7 +39,7 @@ public class TaskTableModel extends AbstractTableModel {
 			result = aTask.getDescription();
 			break;
 		case 1:
-			result = Date.toString(aTask.getDueDate());
+			result = df.format(aTask.getDueDate());
 			break;
 		}
 		return result;
