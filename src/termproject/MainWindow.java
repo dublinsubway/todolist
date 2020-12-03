@@ -2,6 +2,8 @@ package termproject;
 
 import net.miginfocom.swing.MigLayout;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,20 +15,15 @@ import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 public class MainWindow extends JFrame {
 	
 	private JMenuBar menubar = new JMenuBar();
-	private JMenu editMenu = new JMenu("Edit");
 	private JMenu aboutMenu = new JMenu("About");
-	private JMenuItem doneMenuButton = new JMenuItem("Done/undone");
-	private JMenuItem addMenuButton = new JMenuItem("Add");
-	private JMenuItem deleteMenuButton = new JMenuItem("Delete");
-	private JMenuItem editMenuButton = new JMenuItem("Edit");
 	private JMenuItem aboutMenuButton = new JMenuItem("About");
 	
 	private JCheckBox doneCheckBox = new JCheckBox("Done");
@@ -45,16 +42,34 @@ public class MainWindow extends JFrame {
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		
 		this.setJMenuBar(menubar);
-		menubar.add(editMenu);
-		editMenu.add(doneMenuButton);
-		editMenu.add(addMenuButton);
-		editMenu.add(editMenuButton);
-		editMenu.add(deleteMenuButton);
 		menubar.add(aboutMenu);
 		aboutMenu.add(aboutMenuButton);
+		aboutMenuButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(MainWindow.this,
+						"Developer email: lotterygame@rambler.ua\n\n"
+						+ "KShramko developments, 2020\n"
+						+ "All rights reserved.",
+						"About",
+						JOptionPane.PLAIN_MESSAGE);
+			}
+			
+		});
 		
 		
 		this.add(addButton, "tag add");
+		addButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TaskDialog dialog = new TaskDialog(MainWindow.this, "New task");
+				dialog.setVisible(true);
+				
+			}
+			
+		});
 		this.add(editButton, "tag edit");
 		this.add(deleteButton, "tag delete");
 		this.add(doneCheckBox, "split 4, wrap");
