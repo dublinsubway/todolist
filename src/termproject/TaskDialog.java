@@ -3,6 +3,8 @@ package termproject;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -28,9 +30,12 @@ public class TaskDialog extends JDialog {
 	private Calendar calendar = Calendar.getInstance();
 	private JButton okButton = new JButton("Add");
 	private JButton cancelButton = new JButton("Cancel");
+	private MainWindow parent;
 	
 	public TaskDialog(Frame owner, String title) {
 		super(owner, title);
+		parent = (MainWindow) this.getParent();
+		this.setLocationRelativeTo(parent);
 		this.setLayout(new MigLayout("insets 20"));
 		// label + text field
 		this.add(descriptionLabel);
@@ -74,7 +79,28 @@ public class TaskDialog extends JDialog {
 					} catch (java.text.ParseException ex) {
 						valid = false;
 					} // catch end
-					String date = (String) dateSpinner.getValue() + (String) timeSpinner.getValue();
+					String stringDate = (String) dateSpinner.getValue() + ' ' + (String) timeSpinner.getValue();
+					SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+					Date date = new Date();
+					try {
+						date = format.parse(stringDate);
+					} catch (ParseException exp) {
+						// TODO Auto-generated catch block
+						exp.printStackTrace();
+					}
+					if (date.before(new Date()) || date.equals(new Date())) {
+						valid = false;
+						JOptionPane.showMessageDialog(TaskDialog.this,
+								"Task date is earlier than current date.",
+								"Invalid input",
+								JOptionPane.PLAIN_MESSAGE);
+					} // end before if
+					
+					if (valid) {
+						//listModel.add(new Task(descriptionTextField.getText(), date));
+						System.out.println("here we go, date is " + date);
+					}
+					
 					
 				} // else end
 				
