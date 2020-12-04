@@ -60,7 +60,7 @@ public class TaskDialog extends JDialog {
         // ok and cancel buttons
         this.add(okButton, "tag ok");
         this.add(cancelButton, "tag cancel, split 2");
-        okButton.addActionListener( new ActionListener() {
+        okButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -79,15 +79,11 @@ public class TaskDialog extends JDialog {
 					} catch (java.text.ParseException ex) {
 						valid = false;
 					} // catch end
-					String stringDate = (String) dateSpinner.getValue() + ' ' + (String) timeSpinner.getValue();
-					SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-					Date date = new Date();
-					try {
-						date = format.parse(stringDate);
-					} catch (ParseException exp) {
-						// TODO Auto-generated catch block
-						exp.printStackTrace();
-					}
+					
+					// get the time stored in a string
+					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+					String time = timeFormat.format(timeSpinner.getValue());
+					
 					if (date.before(new Date()) || date.equals(new Date())) {
 						valid = false;
 						JOptionPane.showMessageDialog(TaskDialog.this,
