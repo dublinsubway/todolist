@@ -1,30 +1,37 @@
 package termproject;
 
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Calendar;
 import java.util.Date;
 
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
+import javax.swing.JOptionPane;
 
 import net.miginfocom.swing.MigLayout;
 
 public class TaskDialog extends JDialog {
 	
 	private JLabel descriptionLabel = new JLabel("Description:");
-	private JTextField descriptionTextField = new JTextField(100);
+	private JTextField descriptionTextField = new JTextField(15);
 	private JLabel dateSpinnerLabel = new JLabel("Deadline date:");
 	private JLabel timeSpinnerLabel = new JLabel("Deadline time:");
 	private Calendar calendar = Calendar.getInstance();
+	private JButton okButton = new JButton("Add");
+	private JButton cancelButton = new JButton("Cancel");
 	
 	public TaskDialog(Frame owner, String title) {
 		super(owner, title);
-		this.setLayout(new MigLayout());
+		this.setLayout(new MigLayout("insets 20"));
 		// label + text field
 		this.add(descriptionLabel);
 		this.add(descriptionTextField, "wrap");
@@ -44,7 +51,43 @@ public class TaskDialog extends JDialog {
         SpinnerModel timeModel = new SpinnerDateModel(initDate, null, null, Calendar.MINUTE);
         JSpinner timeSpinner = new JSpinner(timeModel);
         timeSpinner.setEditor(new JSpinner.DateEditor(timeSpinner, "HH:mm"));
-        this.add(timeSpinner);
+        this.add(timeSpinner, "wrap");
+        // ok and cancel buttons
+        this.add(okButton, "tag ok");
+        this.add(cancelButton, "tag cancel, split 2");
+        okButton.addActionListener( new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				boolean valid = true;
+				if (descriptionTextField.getText().equals("")) {
+					// if text field is empty
+					JOptionPane.showMessageDialog(TaskDialog.this,
+							"Task name is empty. Enter the name of the task.",
+							"Invalid input",
+							JOptionPane.PLAIN_MESSAGE);
+				} // empty field if end
+				else {
+					try {
+						dateSpinner.commitEdit();
+						timeSpinner.commitEdit();
+					} catch (java.text.ParseException ex) {
+						valid = false;
+					} // catch end
+					String date = (String) dateSpinner.getValue() + (String) timeSpinner.getValue();
+					
+				} // else end
+				
+			} // actionPerformed end
+        });
+        
+        cancelButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TaskDialog.this.dispose(); // closes the dialog
+			}
+        });
+        // display size
         this.pack();
 	}
 
