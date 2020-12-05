@@ -6,12 +6,12 @@ public class Task {
 	
 	private String description;
 	private LocalDateTime dueDate;
-	boolean isActive;
+	boolean isNotActive;
 	
 	public Task(String desc, LocalDateTime dt) {
 		this.description = desc;
 		this.dueDate = dt;
-		this.isActive = true;
+		this.isNotActive = false;
 	}
 
 	public String getDescription() {
@@ -30,11 +30,11 @@ public class Task {
 		this.dueDate = dueDate;
 	}
 	
-	public boolean getIsActive() {
-		return this.isActive;
+	public boolean getIsNotActive() {
+		return this.isNotActive;
 	}
 	
-	public void setActive(boolean aa) {
-		this.isActive = aa;
+	public void setIsNotActive(boolean aa) {
+		this.isNotActive = aa;
 	}
 }
