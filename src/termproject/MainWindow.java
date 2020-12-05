@@ -42,26 +42,7 @@ public class MainWindow extends JFrame {
 	private JScrollPane scrollPane = new JScrollPane(taskTable,
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
-	ItemListener listener = new ItemListener() {
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				int row = taskTable.getSelectedRow();
-	    		if (row != -1) {
-	    			if (e.getStateChange() == ItemEvent.DESELECTED) {
-	    				Task aTask = tasks.get(row);
-	    				aTask.setIsNotActive(false);
-	    				tableModel.updateRow(row, aTask);
-	    			}	
-	    			else {
-	    				Task aTask = tasks.get(row);
-	    				aTask.setIsNotActive(true);
-	    				tableModel.updateRow(row, aTask);
-	    			} // end else if	
-	    		} // end tasktable if
-				
-			}
-	};
+	private DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 	
 	public MainWindow(String title) {
 		super(title);
@@ -121,7 +102,25 @@ public class MainWindow extends JFrame {
 
 		});
 		this.add(doneButton, "split 4, wrap");
-		doneButton.addItemListener(listener);
+		doneButton.addItemListener(new ItemListener() {
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				int row = taskTable.getSelectedRow();
+	    		if (row != -1) {
+	    			if (e.getStateChange() == ItemEvent.DESELECTED) {
+	    				Task aTask = tasks.get(row);
+	    				aTask.setIsNotActive(false);
+	    				tableModel.updateRow(row, aTask);
+	    			}	
+	    			else {
+	    				Task aTask = tasks.get(row);
+	    				aTask.setIsNotActive(true);
+	    				tableModel.updateRow(row, aTask);
+	    			} // end else if	
+	    		} // end tasktable if
+			}
+		});
 			
 		this.add(scrollPane, "span 4 3, wrap");
 		
