@@ -5,6 +5,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -83,14 +87,19 @@ public class TaskDialog extends JDialog {
 					// get the time stored in a string
 					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 					String time = timeFormat.format(timeSpinner.getValue());
+					int hours = Integer.parseInt(time.substring(0, 2));
+					int minutes = Integer.parseInt(time.substring(3));
+					Date legacyDate = (Date) dateSpinner.getValue();
+					LocalDateTime date = LocalDateTime.ofInstant(legacyDate.toInstant(), ZoneId.systemDefault());
+					date = date.with(LocalTime.of(hours, minutes));
 					
-					if (date.before(new Date()) || date.equals(new Date())) {
+					if (date.isBefore(LocalDateTime.now()) || date.equals(LocalDateTime.now())) {
 						valid = false;
 						JOptionPane.showMessageDialog(TaskDialog.this,
-								"Task date is earlier than current date.",
+								"Task due date is earlier than current date.",
 								"Invalid input",
 								JOptionPane.PLAIN_MESSAGE);
-					} // end before if
+					} // end before if 
 					
 					if (valid) {
 						//listModel.add(new Task(descriptionTextField.getText(), date));
