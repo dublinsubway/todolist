@@ -1,6 +1,8 @@
 package termproject;
 
+import java.awt.Color;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -10,6 +12,7 @@ public class TaskTableModel extends AbstractTableModel {
 	private List<Task> tasks;
 	private String[] columnNames = {"Task description", "Due date"};
 	private DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm");
+	private List<Color> colours = Arrays.asList(Color.RED, Color.BLUE, Color.LIGHT_GRAY, Color.WHITE);
 	
 	public TaskTableModel(List<Task> tasks) {
 		this.tasks = tasks;
@@ -68,5 +71,12 @@ public class TaskTableModel extends AbstractTableModel {
 		fireTableRowsUpdated(position, position);
 	}
 	
-	
+	public void setRowColour(int row, Color colour) {
+        colours.set(row, colour);
+        fireTableRowsUpdated(row, row);
+    }
+
+    public Color getRowColour(int row) {
+        return colours.get(row);
+    }
 }
