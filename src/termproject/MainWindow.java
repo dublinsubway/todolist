@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,23 @@ public class MainWindow extends JFrame {
 	
 	private List<Task> tasks = new ArrayList<Task>();
 	private TaskTableModel tableModel = new TaskTableModel(tasks);
-	private JTable taskTable = new JTable(tableModel);
+	private JTable taskTable = new JTable(tableModel) {
+		public String getToolTipText(MouseEvent e) {
+            String tip = null;
+            java.awt.Point p = e.getPoint();
+            int rowIndex = rowAtPoint(p);
+            int colIndex = columnAtPoint(p);
+
+            try {
+            	if (colIndex == 0)
+                tip = getValueAt(rowIndex, colIndex).toString();
+            } catch (RuntimeException ex) {
+            	// do nothing
+            }
+
+            return tip;
+        }
+	};
 	private JScrollPane scrollPane = new JScrollPane(taskTable,
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
