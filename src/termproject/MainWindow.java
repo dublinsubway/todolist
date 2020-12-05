@@ -7,12 +7,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -20,6 +24,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -29,7 +34,8 @@ public class MainWindow extends JFrame {
 	
 	private JMenuBar menubar = new JMenuBar();
 	private JMenu aboutMenu = new JMenu("About");
-	private JMenuItem aboutMenuButton = new JMenuItem("About");
+	private JMenuItem aboutMenuButton = new JMenuItem("About...");
+	private JMenuItem helpMenuButton = new JMenuItem("Help...");
 	
 	private JCheckBox doneButton = new JCheckBox("Done");
 	private JButton addButton = new JButton("Add");
@@ -65,7 +71,32 @@ public class MainWindow extends JFrame {
 			}
 			
 		});
+		aboutMenu.add(helpMenuButton);
+		helpMenuButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(MainWindow.this,
+						"helptext",
+						"Help",
+						JOptionPane.PLAIN_MESSAGE);
+			}
+			
+		});
 		
+		Action f1Action = new AbstractAction("showHelp") {
+			 
+		    @Override
+		    public void actionPerformed(ActionEvent e) {
+		    	JOptionPane.showMessageDialog(MainWindow.this,
+						"helptext",
+						"Help",
+						JOptionPane.PLAIN_MESSAGE);
+		    }
+		};
+		helpMenuButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
+				KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "showHelp");
+		helpMenuButton.getActionMap().put("showHelp", f1Action);
 		
 		this.add(addButton, "tag add");
 		addButton.addActionListener(new ActionListener() {
@@ -78,6 +109,23 @@ public class MainWindow extends JFrame {
 			
 		});
 		this.add(editButton, "tag edit");
+		editButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int row = taskTable.getSelectedRow();
+				if (row == -1)
+					JOptionPane.showMessageDialog(MainWindow.this,
+							"No row is selected to be edited.",
+							"Incorrect selection",
+							JOptionPane.PLAIN_MESSAGE);
+				else {
+				TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
+				dialog.setVisible(true);
+				}
+			}
+			
+		});
 		this.add(deleteButton, "tag delete");
 		deleteButton.addActionListener(new ActionListener() {
 

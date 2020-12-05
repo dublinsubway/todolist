@@ -31,7 +31,11 @@ public class TaskDialog extends JDialog {
 	private JButton okButton = new JButton("Add");
 	private JButton cancelButton = new JButton("Cancel");
 	private MainWindow parent;
+	private JSpinner dateSpinner;
+	private JSpinner timeSpinner;
 	
+	
+	// this constructor is called when new task is added
 	public TaskDialog(Frame owner, String title) {
 		super(owner, title);
 		parent = (MainWindow) this.getParent();
@@ -48,70 +52,19 @@ public class TaskDialog extends JDialog {
         calendar.add(Calendar.YEAR, 10);
         Date latestDate = calendar.getTime();
         SpinnerModel dateModel = new SpinnerDateModel(initDate, earliestDate, latestDate, Calendar.YEAR);
-        JSpinner dateSpinner = new JSpinner(dateModel);
+        dateSpinner = new JSpinner(dateModel);
         dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, "dd/MM/yyyy"));
         this.add(dateSpinner, "wrap");
         // label + time spinner
         this.add(timeSpinnerLabel);
         SpinnerModel timeModel = new SpinnerDateModel(initDate, null, null, Calendar.MINUTE);
-        JSpinner timeSpinner = new JSpinner(timeModel);
+        timeSpinner = new JSpinner(timeModel);
         timeSpinner.setEditor(new JSpinner.DateEditor(timeSpinner, "HH:mm"));
         this.add(timeSpinner, "wrap");
         // ok and cancel buttons
         this.add(okButton, "tag ok");
         this.add(cancelButton, "tag cancel, split 2");
-        okButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				boolean valid = true;
-				if (descriptionTextField.getText().equals("")) {
-					// if text field is empty
-					JOptionPane.showMessageDialog(TaskDialog.this,
-							"Task name is empty. Enter the name of the task.",
-							"Invalid input",
-							JOptionPane.PLAIN_MESSAGE);
-				} // empty field if end
-				else {
-					try {
-						dateSpinner.commitEdit();
-						timeSpinner.commitEdit();
-					} catch (java.text.ParseException ex) {
-						valid = false;
-					} // catch end
-					
-					// get the time stored in a string
-					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-					String time = timeFormat.format(timeSpinner.getValue());
-					// get hours and minutes seprartely
-					int hours = Integer.parseInt(time.substring(0, 2));
-					int minutes = Integer.parseInt(time.substring(3));
-					// get the date itself that is given
-					Date legacyDate = (Date) dateSpinner.getValue();
-					// create an objects with date and add time that user entered
-					LocalDateTime date = LocalDateTime.ofInstant(legacyDate.toInstant(), ZoneId.systemDefault());
-					date = date.with(LocalTime.of(hours, minutes));
-					
-					// to not allow user to enter time/date that is in the past/now
-					if (date.isBefore(LocalDateTime.now()) || date.equals(LocalDateTime.now())) {
-						valid = false;
-						JOptionPane.showMessageDialog(TaskDialog.this,
-								"Task due date is earlier than current date.",
-								"Invalid input",
-								JOptionPane.PLAIN_MESSAGE);
-					} // end before if 
-					
-					if (valid) {
-						//tableModel.insertRow(new Task(descriptionTextField.getText(), date));
-						System.out.println("here we go, date is " + date);
-						TaskDialog.this.dispose(); // closes the dialog
-					}
-					
-					
-				} // else end
-				
-			} // actionPerformed end
-        });
+        okButton.addActionListener(new okListener());
         
         cancelButton.addActionListener(new ActionListener() {
 			@Override
@@ -121,6 +74,91 @@ public class TaskDialog extends JDialog {
         });
         // display size
         this.pack();
-	}
+	} // end add consturctor
+	
+	// this constructor is called when existing task is edited
+	public TaskDialog(Frame owner, String title, int position) {
+		super(owner, title);
+		parent = (MainWindow) this.getParent();
+		this.setLocationRelativeTo(parent);
+		this.setLayout(new MigLayout("insets 20"));
+		// label + text field
+		this.add(descriptionLabel);
+		this.add(descriptionTextField, "wrap");
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get this from window
+		this.add(dateSpinnerLabel);
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! get this from window
+		this.add(dateSpinner, "wrap");
+		this.add(timeSpinnerLabel);
+		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! once again, window
+        this.add(timeSpinner, "wrap"); 
+		
+		this.add(okButton, "tag ok");
+        this.add(cancelButton, "tag cancel, split 2");
+        okButton.addActionListener(new okListener());
+        
+        cancelButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TaskDialog.this.dispose(); // closes the dialog
+			}
+        });
+        // display size
+        this.pack();
+	} // end edit constructor
+	
+	
+	public class okListener implements ActionListener {
 
-}
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			boolean valid = true;
+			if (descriptionTextField.getText().equals("")) {
+				// if text field is empty
+				JOptionPane.showMessageDialog(TaskDialog.this,
+						"Task name is empty. Enter the name of the task.",
+						"Invalid input",
+						JOptionPane.PLAIN_MESSAGE);
+			} // empty field if end
+			else {
+				try {
+					dateSpinner.commitEdit();
+					timeSpinner.commitEdit();
+				} catch (java.text.ParseException ex) {
+					valid = false;
+				} // catch end
+				
+				// get the time stored in a string
+				SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+				String time = timeFormat.format(timeSpinner.getValue());
+				// get hours and minutes seprartely
+				int hours = Integer.parseInt(time.substring(0, 2));
+				int minutes = Integer.parseInt(time.substring(3));
+				// get the date itself that is given
+				Date legacyDate = (Date) dateSpinner.getValue();
+				// create an objects with date and add time that user entered
+				LocalDateTime date = LocalDateTime.ofInstant(legacyDate.toInstant(), ZoneId.systemDefault());
+				date = date.with(LocalTime.of(hours, minutes));
+				
+				// to not allow user to enter time/date that is in the past/now
+				if (date.isBefore(LocalDateTime.now()) || date.equals(LocalDateTime.now())) {
+					valid = false;
+					JOptionPane.showMessageDialog(TaskDialog.this,
+							"Task due date is earlier than current date.",
+							"Invalid input",
+							JOptionPane.PLAIN_MESSAGE);
+				} // end before if 
+				
+				if (valid) {
+					//tableModel.insertRow(new Task(descriptionTextField.getText(), date));
+					System.out.println("here we go, date is " + date);
+					TaskDialog.this.dispose(); // closes the dialog
+				}
+				
+				
+			} // else end
+			
+		} // actionPerformed end
+    } // end oklistener class
+	
+} // end taskdialog class
