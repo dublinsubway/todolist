@@ -4,6 +4,7 @@ import net.miginfocom.swing.MigLayout;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,6 +74,9 @@ public class MainWindow extends JFrame {
 		this.add(deleteButton, "tag delete");
 		this.add(doneCheckBox, "split 4, wrap");
 		this.add(scrollPane, "span 4 3, wrap");
+		tableModel.insertRow(new Task("First task", LocalDateTime.of(2020, 12, 12, 11, 45)));
+		tableModel.insertRow(new Task("Second task", LocalDateTime.of(2020, 12, 13, 12, 40)));
+		tableModel.insertRow(new Task("Third task", LocalDateTime.of(2020, 12, 25, 13, 30)));
 	}
 	
 	public static void main(String[] args) {

@@ -3,9 +3,7 @@ package termproject;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -19,9 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
-import javax.swing.SpinnerListModel;
 import javax.swing.SpinnerModel;
-import javax.swing.JOptionPane;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -87,12 +83,16 @@ public class TaskDialog extends JDialog {
 					// get the time stored in a string
 					SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 					String time = timeFormat.format(timeSpinner.getValue());
+					// get hours and minutes seprartely
 					int hours = Integer.parseInt(time.substring(0, 2));
 					int minutes = Integer.parseInt(time.substring(3));
+					// get the date itself that is given
 					Date legacyDate = (Date) dateSpinner.getValue();
+					// create an objects with date and add time that user entered
 					LocalDateTime date = LocalDateTime.ofInstant(legacyDate.toInstant(), ZoneId.systemDefault());
 					date = date.with(LocalTime.of(hours, minutes));
 					
+					// to not allow user to enter time/date that is in the past/now
 					if (date.isBefore(LocalDateTime.now()) || date.equals(LocalDateTime.now())) {
 						valid = false;
 						JOptionPane.showMessageDialog(TaskDialog.this,
@@ -102,8 +102,9 @@ public class TaskDialog extends JDialog {
 					} // end before if 
 					
 					if (valid) {
-						//listModel.add(new Task(descriptionTextField.getText(), date));
+						//tableModel.insertRow(new Task(descriptionTextField.getText(), date));
 						System.out.println("here we go, date is " + date);
+						TaskDialog.this.dispose(); // closes the dialog
 					}
 					
 					

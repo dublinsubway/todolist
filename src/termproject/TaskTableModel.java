@@ -2,6 +2,7 @@ package termproject;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
@@ -10,7 +11,7 @@ public class TaskTableModel extends AbstractTableModel {
 
 	private List<Task> tasks;
 	private String[] columnNames = {"Task description", "Due date"};
-	private DateFormat df = new SimpleDateFormat("dd/MM/YYYY HH:mm");
+	private DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm");
 	
 	public TaskTableModel(List<Task> tasks) {
 		this.tasks = tasks;
@@ -45,6 +46,26 @@ public class TaskTableModel extends AbstractTableModel {
 		return result;
 	}
 	
-	
+	 public boolean isCellEditable(int row, int col) {
+         if (col < 2) {
+             return true;
+         } else {
+             return false;
+         }
+     }
 
+	public void insertRow(Task task) {
+		this.tasks.add(task);
+		
+	}
+	
+	public void deleteRow(int position) {
+		this.tasks.remove(position);
+	}
+	
+	public void updateRow(int position, Task newTask) {
+		tasks.set(position, newTask);
+	}
+	
+	
 }

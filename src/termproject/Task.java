@@ -1,16 +1,17 @@
 package termproject;
 
-import java.util.Date;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 
 public class Task {
 	
 	private String description;
-	private Date dueDate;
+	private LocalDateTime dueDate;
+	boolean isActive;
 	
-	public Task(String desc, Date dt) {
+	public Task(String desc, LocalDateTime dt) {
 		this.description = desc;
 		this.dueDate = dt;
+		this.isActive = true;
 	}
 
 	public String getDescription() {
@@ -21,11 +22,19 @@ public class Task {
 		this.description = description;
 	}
 
-	public Date getDueDate() {
+	public LocalDateTime getDueDate() {
 		return dueDate;
 	}
 
-	public void setDueDate(Date dueDate) {
+	public void setDueDate(LocalDateTime dueDate) {
 		this.dueDate = dueDate;
+	}
+	
+	public boolean getIsActive() {
+		return this.isActive;
+	}
+	
+	public void setActive(boolean aa) {
+		this.isActive = aa;
 	}
 }
