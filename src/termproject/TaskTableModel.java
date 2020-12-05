@@ -56,15 +56,18 @@ public class TaskTableModel extends AbstractTableModel {
 
 	public void insertRow(Task task) {
 		this.tasks.add(task);
+		fireTableRowsInserted(tasks.size(), tasks.size());
 		
 	}
 	
 	public void deleteRow(int position) {
 		this.tasks.remove(position);
+		fireTableRowsDeleted(position, position);
 	}
 	
 	public void updateRow(int position, Task newTask) {
 		tasks.set(position, newTask);
+		fireTableRowsUpdated(position, position);
 	}
 	
 	

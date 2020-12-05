@@ -2,6 +2,7 @@ package termproject;
 
 import net.miginfocom.swing.MigLayout;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.time.LocalDateTime;
@@ -19,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
 
 public class MainWindow extends JFrame {
 	
@@ -34,7 +36,10 @@ public class MainWindow extends JFrame {
 	private List<Task> tasks = new ArrayList<Task>();
 	private TaskTableModel tableModel = new TaskTableModel(tasks);
 	private JTable taskTable = new JTable(tableModel);
-	private JScrollPane scrollPane = new JScrollPane(taskTable);
+	private JScrollPane scrollPane = new JScrollPane(taskTable,
+			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+	DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 	
 	public MainWindow(String title) {
 		super(title);
@@ -66,14 +71,45 @@ public class MainWindow extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				TaskDialog dialog = new TaskDialog(MainWindow.this, "New task");
 				dialog.setVisible(true);
-				
 			}
 			
 		});
 		this.add(editButton, "tag edit");
 		this.add(deleteButton, "tag delete");
+		deleteButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (taskTable.getSelectedRow() == -1)
+					JOptionPane.showMessageDialog(MainWindow.this,
+							"No row is selected to be deleted.",
+							"Incorrect selection",
+							JOptionPane.PLAIN_MESSAGE);
+				else {
+					int resp = JOptionPane.showConfirmDialog(
+							MainWindow.this,
+							"Are you sure you want " +
+							"to delete chosen task?",
+							"Deletion confirmation",
+							JOptionPane.YES_NO_OPTION);
+					if (resp == 0) 
+						tableModel.deleteRow(taskTable.getSelectedRow());
+				} // end else
+			} // end actionperformed
+
+		});
 		this.add(doneCheckBox, "split 4, wrap");
 		this.add(scrollPane, "span 4 3, wrap");
+		
+		taskTable.setSelectionMode(0); // single selection
+		taskTable.setColumnSelectionAllowed(false);
+		// size?
+		
+	    taskTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+	    taskTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		scrollPane.setPreferredSize(new Dimension(400, 100));
+		taskTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+		// hardwiring values
 		tableModel.insertRow(new Task("First task", LocalDateTime.of(2020, 12, 12, 11, 45)));
 		tableModel.insertRow(new Task("Second task", LocalDateTime.of(2020, 12, 13, 12, 40)));
 		tableModel.insertRow(new Task("Third task", LocalDateTime.of(2020, 12, 25, 13, 30)));
