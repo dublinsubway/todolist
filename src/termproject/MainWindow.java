@@ -9,7 +9,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +49,9 @@ public class MainWindow extends JFrame {
 	private List<Task> tasks = new ArrayList<Task>();
 	private TaskTableModel tableModel = new TaskTableModel(tasks);
 	private JTable taskTable = new JTable(tableModel) {
+		public boolean editCellAt(int row, int column, java.util.EventObject e) {
+            return false;
+		}
 		public String getToolTipText(MouseEvent e) {
             String tooltip = "";
             Point p = e.getPoint();
@@ -198,6 +203,19 @@ public class MainWindow extends JFrame {
 				int row = taskTable.getSelectedRow();
 				Task aTask = tasks.get(row);
 				doneButton.setSelected(aTask.getIsNotActive());
+			}
+		});
+		taskTable.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					JTable source = (JTable) e.getSource();
+		            int row = source.getSelectedRow();
+		            System.out.println("double click happens");
+					//TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
+					//dialog.setVisible(true);
+				}	
 			}
 		});
 		// size?

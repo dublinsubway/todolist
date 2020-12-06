@@ -92,7 +92,7 @@ public class TaskDialog extends JDialog {
 		this.add(timeSpinnerLabel);
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! once again, window
         this.add(timeSpinner, "wrap"); 
-		
+        
 		this.add(okButton, "tag ok");
         this.add(cancelButton, "tag cancel, split 2");
         okButton.addActionListener(new okListener());
