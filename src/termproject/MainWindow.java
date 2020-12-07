@@ -2,6 +2,8 @@ package termproject;
 
 import net.miginfocom.swing.MigLayout;
 
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -11,7 +13,6 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +72,6 @@ public class MainWindow extends JFrame {
 	private JScrollPane scrollPane = new JScrollPane(taskTable,
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
             JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	private DefaultTableCellRenderer renderer = new DefaultTableCellRenderer();
 	
 	public MainWindow(String title) {
 		super(title);
@@ -218,9 +218,30 @@ public class MainWindow extends JFrame {
 				}	
 			}
 		});
-		// size?
-	    taskTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
-	    taskTable.getColumnModel().getColumn(0).setCellRenderer(renderer);
+		
+		taskTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() { // a что а как
+			@Override
+		    public Component getTableCellRendererComponent(JTable table,
+		            Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+
+				super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
+
+				Task aTask = tasks.get(row);
+				if (isSelected) {
+					setBackground(Color.BLUE);
+				}
+				else {
+					if (aTask.getIsNotActive() == true)
+						setBackground(Color.LIGHT_GRAY);
+					else
+					{
+						setBackground(table.getBackground());
+					}
+				}
+				return this;
+			}   
+		});
+		// size, need help
 		scrollPane.setPreferredSize(new Dimension(400, 100));
 		taskTable.getColumnModel().getColumn(1).setPreferredWidth(50);
 		// hardwiring values
