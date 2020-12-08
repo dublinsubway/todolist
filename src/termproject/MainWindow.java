@@ -13,6 +13,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -227,16 +228,23 @@ public class MainWindow extends JFrame {
 				super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 				Task aTask = tasks.get(row);
+				LocalDateTime currentDate = LocalDateTime.now();
+				Duration duration = Duration.between(currentDate, aTask.getDueDate());
+				
 				if (isSelected) {
 					setBackground(Color.BLUE);
 				}
 				else {
-					if (aTask.getIsNotActive() == true)
+					if (aTask.getIsNotActive() == true) // if set as done
 						setBackground(Color.LIGHT_GRAY);
+					else if (aTask.getDueDate().isBefore(currentDate)) // past deadline
+						setBackground(Color.RED);
+					else if (duration.toHours() <= 24) // a day or less left
+						setBackground(Color.ORANGE);
+					else if (duration.toHours() <= 72) // 3 days or less left
+						setBackground(Color.MAGENTA);
 					else
-					{
 						setBackground(table.getBackground());
-					}
 				}
 				return this;
 			}   
@@ -245,8 +253,8 @@ public class MainWindow extends JFrame {
 		scrollPane.setPreferredSize(new Dimension(400, 100));
 		taskTable.getColumnModel().getColumn(1).setPreferredWidth(50);
 		// hardwiring values
-		tableModel.insertRow(new Task("First task", LocalDateTime.of(2020, 12, 12, 11, 45)));
-		tableModel.insertRow(new Task("Second task", LocalDateTime.of(2020, 12, 13, 12, 40)));
+		tableModel.insertRow(new Task("First task", LocalDateTime.of(2020, 12, 8, 11, 45)));
+		tableModel.insertRow(new Task("Second task", LocalDateTime.of(2020, 12, 10, 12, 40)));
 		tableModel.insertRow(new Task("Third task", LocalDateTime.of(2020, 12, 25, 13, 30)));
 	}
 	
