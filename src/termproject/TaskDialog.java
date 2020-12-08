@@ -33,6 +33,7 @@ public class TaskDialog extends JDialog {
 	private MainWindow parent;
 	private JSpinner dateSpinner;
 	private JSpinner timeSpinner;
+	private int position = -2;
 	
 	
 	// this constructor is called when new task is added
@@ -77,11 +78,12 @@ public class TaskDialog extends JDialog {
 	} // end add consturctor
 	
 	// this constructor is called when existing task is edited
-	public TaskDialog(Frame owner, String title, int position) {
+	public TaskDialog(Frame owner, String title, int pos) {
 		super(owner, title);
 		parent = (MainWindow) this.getParent();
 		this.setLocationRelativeTo(parent);
 		this.setLayout(new MigLayout("insets 20"));
+		this.position = pos;
 		// label + text field
 		this.add(descriptionLabel);
 		this.add(descriptionTextField, "wrap");
@@ -149,9 +151,13 @@ public class TaskDialog extends JDialog {
 							JOptionPane.PLAIN_MESSAGE);
 				} // end before if 
 				
-				if (valid) {
-					//tableModel.insertRow(new Task(descriptionTextField.getText(), date));
-					System.out.println("here we go, date is " + date);
+				if (valid && position == -2) {
+					String taskInfo = descriptionTextField.getText();
+					parent.insertRow(new Task(taskInfo, date));
+					TaskDialog.this.dispose(); // closes the dialog
+				} else if (valid && position >= 0) {
+					String taskInfo = descriptionTextField.getText();
+					parent.updateRow(new Task(taskInfo, date), position);
 					TaskDialog.this.dispose(); // closes the dialog
 				}
 				

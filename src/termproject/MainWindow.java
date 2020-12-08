@@ -202,8 +202,10 @@ public class MainWindow extends JFrame {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				int row = taskTable.getSelectedRow();
-				Task aTask = tasks.get(row);
-				doneButton.setSelected(aTask.getIsNotActive());
+				if (row != -1) {
+					Task aTask = tasks.get(row);
+					doneButton.setSelected(aTask.getIsNotActive());
+				}
 			}
 		});
 		taskTable.addMouseListener(new MouseAdapter() {
@@ -213,9 +215,8 @@ public class MainWindow extends JFrame {
 				if (e.getClickCount() == 2) {
 					JTable source = (JTable) e.getSource();
 		            int row = source.getSelectedRow();
-		            System.out.println("double click happens");
-					//TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
-					//dialog.setVisible(true);
+					TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
+					dialog.setVisible(true);
 				}	
 			}
 		});
@@ -249,8 +250,8 @@ public class MainWindow extends JFrame {
 				return this;
 			}   
 		});
-		// size, need help
-		scrollPane.setPreferredSize(new Dimension(400, 100));
+		// size
+		scrollPane.setPreferredSize(new Dimension(400, 200));
 		taskTable.getColumnModel().getColumn(1).setPreferredWidth(50);
 		// hardwiring values
 		tableModel.insertRow(new Task("First task", LocalDateTime.of(2020, 12, 8, 11, 45)));
@@ -258,7 +259,13 @@ public class MainWindow extends JFrame {
 		tableModel.insertRow(new Task("Third task", LocalDateTime.of(2020, 12, 25, 13, 30)));
 	}
 	
+	public void insertRow(Task task) {
+		this.tableModel.insertRow(task);
+	}
 	
+	public void updateRow(Task task, int position) {
+		this.tableModel.updateRow(position, task);
+	}
 	
 	public static void main(String[] args) {
 		String systemLookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
