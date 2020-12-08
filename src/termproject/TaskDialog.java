@@ -65,7 +65,60 @@ public class TaskDialog extends JDialog {
         // ok and cancel buttons
         this.add(okButton, "tag ok");
         this.add(cancelButton, "tag cancel, split 2");
-        okButton.addActionListener(new okListener());
+        okButton.addActionListener(new ActionListener() {
+        	@Override
+    		public void actionPerformed(ActionEvent e) {
+    			boolean valid = true;
+    			if (descriptionTextField.getText().equals("")) {
+    				// if text field is empty
+    				JOptionPane.showMessageDialog(TaskDialog.this,
+    						"Task name is empty. Enter the name of the task.",
+    						"Invalid input",
+    						JOptionPane.PLAIN_MESSAGE);
+    			} // empty field if end
+    			else {
+    				try {
+    					dateSpinner.commitEdit();
+    					timeSpinner.commitEdit();
+    				} catch (java.text.ParseException ex) {
+    					valid = false;
+    				} // catch end
+    				
+    				// get the time stored in a string
+    				SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+    				String time = timeFormat.format(timeSpinner.getValue());
+    				// get hours and minutes separately
+    				int hours = Integer.parseInt(time.substring(0, 2));
+    				int minutes = Integer.parseInt(time.substring(3));
+    				// get the date itself that is given
+    				Date legacyDate = (Date) dateSpinner.getValue();
+    				// create an objects with date and add time that user entered
+    				LocalDateTime date = LocalDateTime.ofInstant(legacyDate.toInstant(), ZoneId.systemDefault());
+    				date = date.with(LocalTime.of(hours, minutes));
+    				
+    				// to not allow user to enter time/date that is in the past/now
+    				if (date.isBefore(LocalDateTime.now()) || date.equals(LocalDateTime.now())) {
+    					valid = false;
+    					JOptionPane.showMessageDialog(TaskDialog.this,
+    							"Task due date is earlier than current date.",
+    							"Invalid input",
+    							JOptionPane.PLAIN_MESSAGE);
+    				} // end before if 
+    				
+    				String taskInfo = descriptionTextField.getText();
+    				if (valid && position == -2) {
+    					parent.insertRow(new Task(taskInfo, date));
+    					TaskDialog.this.dispose(); // closes the dialog
+    				} else if (valid && position >= 0) {
+    					parent.updateRow(new Task(taskInfo, date), position);
+    					TaskDialog.this.dispose(); // closes the dialog
+    				}
+    				
+    				
+    			} // else if field isnt empty end
+    			
+    		} // end actionPerformed
+        });
         
         cancelButton.addActionListener(new ActionListener() {
 			@Override
@@ -79,94 +132,12 @@ public class TaskDialog extends JDialog {
 	
 	// this constructor is called when existing task is edited
 	public TaskDialog(Frame owner, String title, int pos) {
-		super(owner, title);
+		this(owner, title);
 		this.position = pos;
-		parent = (MainWindow) this.getParent();
 		Task editedTask = parent.getATask(pos);
-		parent = (MainWindow) this.getParent();
-		this.setLocationRelativeTo(parent);
-		this.setLayout(new MigLayout("insets 20"));
-		// label + text field
-		this.add(descriptionLabel);
-		this.add(descriptionTextField, "wrap");
 		descriptionTextField.setText(editedTask.getDescription());
-		this.add(dateSpinnerLabel);
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! get this from window
-		this.add(dateSpinner, "wrap");
-		this.add(timeSpinnerLabel);
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! once again, window
-        this.add(timeSpinner, "wrap"); 
-        
-		this.add(okButton, "tag ok");
-        this.add(cancelButton, "tag cancel, split 2");
-        okButton.addActionListener(new okListener());
-        
-        cancelButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				TaskDialog.this.dispose(); // closes the dialog
-			}
-        });
-        // display size
-        this.pack();
+		// добавить чтение даты и времени в спиннеры
 	} // end edit constructor
 	
-	
-	public class okListener implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			boolean valid = true;
-			if (descriptionTextField.getText().equals("")) {
-				// if text field is empty
-				JOptionPane.showMessageDialog(TaskDialog.this,
-						"Task name is empty. Enter the name of the task.",
-						"Invalid input",
-						JOptionPane.PLAIN_MESSAGE);
-			} // empty field if end
-			else {
-				try {
-					dateSpinner.commitEdit();
-					timeSpinner.commitEdit();
-				} catch (java.text.ParseException ex) {
-					valid = false;
-				} // catch end
-				
-				// get the time stored in a string
-				SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
-				String time = timeFormat.format(timeSpinner.getValue());
-				// get hours and minutes separately
-				int hours = Integer.parseInt(time.substring(0, 2));
-				int minutes = Integer.parseInt(time.substring(3));
-				// get the date itself that is given
-				Date legacyDate = (Date) dateSpinner.getValue();
-				// create an objects with date and add time that user entered
-				LocalDateTime date = LocalDateTime.ofInstant(legacyDate.toInstant(), ZoneId.systemDefault());
-				date = date.with(LocalTime.of(hours, minutes));
-				
-				// to not allow user to enter time/date that is in the past/now
-				if (date.isBefore(LocalDateTime.now()) || date.equals(LocalDateTime.now())) {
-					valid = false;
-					JOptionPane.showMessageDialog(TaskDialog.this,
-							"Task due date is earlier than current date.",
-							"Invalid input",
-							JOptionPane.PLAIN_MESSAGE);
-				} // end before if 
-				
-				if (valid && position == -2) {
-					String taskInfo = descriptionTextField.getText();
-					parent.insertRow(new Task(taskInfo, date));
-					TaskDialog.this.dispose(); // closes the dialog
-				} else if (valid && position >= 0) {
-					String taskInfo = descriptionTextField.getText();
-					parent.updateRow(new Task(taskInfo, date), position);
-					TaskDialog.this.dispose(); // closes the dialog
-				}
-				
-				
-			} // else if field isnt empty end
-			
-		} // end actionPerformed
-    } // end oklistener
 	
 } // end taskdialog
