@@ -75,19 +75,21 @@ public class TaskDialog extends JDialog {
         });
         // display size
         this.pack();
-	} // end add consturctor
+	} // end add constructor
 	
 	// this constructor is called when existing task is edited
 	public TaskDialog(Frame owner, String title, int pos) {
 		super(owner, title);
+		this.position = pos;
+		parent = (MainWindow) this.getParent();
+		Task editedTask = parent.getATask(pos);
 		parent = (MainWindow) this.getParent();
 		this.setLocationRelativeTo(parent);
 		this.setLayout(new MigLayout("insets 20"));
-		this.position = pos;
 		// label + text field
 		this.add(descriptionLabel);
 		this.add(descriptionTextField, "wrap");
-		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!get this from window
+		descriptionTextField.setText(editedTask.getDescription());
 		this.add(dateSpinnerLabel);
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! get this from window
 		this.add(dateSpinner, "wrap");
@@ -133,7 +135,7 @@ public class TaskDialog extends JDialog {
 				// get the time stored in a string
 				SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 				String time = timeFormat.format(timeSpinner.getValue());
-				// get hours and minutes seprartely
+				// get hours and minutes separately
 				int hours = Integer.parseInt(time.substring(0, 2));
 				int minutes = Integer.parseInt(time.substring(3));
 				// get the date itself that is given
@@ -162,9 +164,9 @@ public class TaskDialog extends JDialog {
 				}
 				
 				
-			} // else end
+			} // else if field isnt empty end
 			
-		} // actionPerformed end
-    } // end oklistener class
+		} // end actionPerformed
+    } // end oklistener
 	
-} // end taskdialog class
+} // end taskdialog

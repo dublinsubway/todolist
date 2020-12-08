@@ -267,6 +267,10 @@ public class MainWindow extends JFrame {
 		this.tableModel.updateRow(position, task);
 	}
 	
+	public Task getATask(int pos) {
+		return tasks.get(pos);
+	}
+	
 	public static void main(String[] args) {
 		String systemLookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
 		try {
