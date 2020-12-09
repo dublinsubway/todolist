@@ -109,9 +109,11 @@ public class TaskDialog extends JDialog {
     				if (valid && position == -2) {
     					parent.insertRow(new Task(taskInfo, date));
     					TaskDialog.this.dispose(); // closes the dialog
+    					parent.sortByDate();
     				} else if (valid && position >= 0) {
     					parent.updateRow(new Task(taskInfo, date), position);
     					TaskDialog.this.dispose(); // closes the dialog
+    					parent.sortByDate();
     				}
     				
     				

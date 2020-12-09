@@ -16,6 +16,7 @@ import java.awt.event.MouseEvent;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -290,8 +291,8 @@ public class MainWindow extends JFrame {
 		scrollPane.setPreferredSize(new Dimension(400, 200));
 		taskTable.getColumnModel().getColumn(1).setPreferredWidth(50);
 		// hardwiring values
-		tableModel.insertRow(new Task("First task", LocalDateTime.of(2020, 12, 8, 11, 45)));
-		tableModel.insertRow(new Task("Second task", LocalDateTime.of(2020, 12, 10, 12, 40)));
+		tableModel.insertRow(new Task("First task", LocalDateTime.of(2020, 12, 8, 12, 10)));
+		tableModel.insertRow(new Task("Second task", LocalDateTime.of(2020, 12, 10, 11, 40)));
 		tableModel.insertRow(new Task("Third task", LocalDateTime.of(2020, 12, 25, 13, 30)));
 	}
 	
@@ -305,6 +306,10 @@ public class MainWindow extends JFrame {
 	
 	public Task getATask(int pos) {
 		return tasks.get(pos);
+	}
+	
+	public void sortByDate() {
+		Collections.sort(tasks);
 	}
 	
 	public static void main(String[] args) {

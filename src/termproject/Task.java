@@ -2,7 +2,7 @@ package termproject;
 
 import java.time.LocalDateTime;
 
-public class Task {
+public class Task implements Comparable<Task> {
 	
 	private String description;
 	private LocalDateTime dueDate;
@@ -37,4 +37,9 @@ public class Task {
 	public void setIsNotActive(boolean aa) {
 		this.isNotActive = aa;
 	}
+	
+	@Override
+	  public int compareTo(Task t) {
+			return getDueDate().compareTo(t.getDueDate());
+	  }
 }
