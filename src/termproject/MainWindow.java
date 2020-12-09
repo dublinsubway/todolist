@@ -47,6 +47,8 @@ public class MainWindow extends JFrame {
 	private JButton addButton = new JButton("Add");
 	private JButton deleteButton = new JButton("Delete");
 	private JButton editButton = new JButton("Edit");
+	private JButton moveUpButton = new JButton("Move up");
+	private JButton moveDownButton = new JButton("Move down");
 	
 	private List<Task> tasks = new ArrayList<Task>();
 	private TaskTableModel tableModel = new TaskTableModel(tasks);
@@ -173,7 +175,40 @@ public class MainWindow extends JFrame {
 			} // end actionperformed
 
 		});
-		this.add(doneButton, "split 4, wrap");
+		this.add(moveUpButton);
+		moveUpButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int row = taskTable.getSelectedRow();
+				if (row > 0) {
+					Task topTask = tasks.get(row - 1);
+					tasks.set(row - 1, tasks.get(row));
+					tasks.set(row, topTask);
+					tableModel.fireTableRowsUpdated(row - 1, row);
+				}
+				
+			}
+			
+		});
+		this.add(moveDownButton);
+		moveDownButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int row = taskTable.getSelectedRow();
+				if (row != -1 && row != tasks.size()) {
+					Task bottomTask = tasks.get(row + 1);
+					tasks.set(row + 1, tasks.get(row));
+					tasks.set(row, bottomTask);
+					tableModel.fireTableRowsUpdated(row, row + 1);
+				}
+				
+			}
+			
+		});
+		
+		this.add(doneButton, "split 6, wrap");
 		doneButton.addItemListener(new ItemListener() {
 
 			@Override
@@ -193,8 +228,9 @@ public class MainWindow extends JFrame {
 	    		} // end tasktable if
 			}
 		});
-			
-		this.add(scrollPane, "span 4 3, wrap");
+		
+		
+		this.add(scrollPane, "span 6, wrap");
 		
 		taskTable.setSelectionMode(0); // single selection
 		taskTable.setColumnSelectionAllowed(false);
