@@ -3,10 +3,12 @@ package termproject;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -138,7 +140,30 @@ public class TaskDialog extends JDialog {
 		this.position = pos;
 		Task editedTask = parent.getATask(pos);
 		descriptionTextField.setText(editedTask.getDescription());
-		// добавить чтение даты и времени в спиннеры
+		DateTimeFormatter dateTimeFormat = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+		String stringDateTime = editedTask.getDueDate().format(dateTimeFormat);
+		String stringDate = stringDateTime.substring(0, 10) + " 00:00";
+		SimpleDateFormat dateClassDateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");  
+		Date date = calendar.getTime();
+		try {
+			date = dateClassDateFormat.parse(stringDate);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		dateSpinner.setValue(date);
+		
+		SimpleDateFormat dateClassTimeFormat = new SimpleDateFormat("HH:mm");  
+		String stringTime = stringDateTime.substring(11);
+		try {
+			date = dateClassTimeFormat.parse(stringTime);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		timeSpinner.setValue(date);
+		
+		
 	} // end edit constructor
 	
 	
