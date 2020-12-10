@@ -38,68 +38,70 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 
 public class MainWindow extends JFrame {
-	
+
 	private JMenuBar menubar = new JMenuBar();
-	private JMenu aboutMenu = new JMenu("About");
+	
+	private JMenu editMenu = new JMenu("Edit");
+	private JMenuItem addMenuButton = new JMenuItem("Add");
+	private JMenuItem editMenuButton = new JMenuItem("Edit");
+	private JMenuItem deleteMenuButton = new JMenuItem("Delete");
+	private JMenuItem doneMenuButton = new JMenuItem("(Un)done");
+	
+	private JMenu helpMenu = new JMenu("Help");
 	private JMenuItem aboutMenuButton = new JMenuItem("About");
 	private JMenuItem helpMenuButton = new JMenuItem("Help");
-	
+
 	private JCheckBox doneButton = new JCheckBox("Done");
 	private JButton addButton = new JButton("Add");
 	private JButton deleteButton = new JButton("Delete");
 	private JButton editButton = new JButton("Edit");
-	
+
 	private List<Task> tasks = new ArrayList<Task>();
+	
 	private TaskTableModel tableModel = new TaskTableModel(tasks);
 	private JTable taskTable = new JTable(tableModel) {
 		public boolean editCellAt(int row, int column, java.util.EventObject e) {
-            return false;
+			return false;
 		}
 		public String getToolTipText(MouseEvent e) {
-            String tooltip = "";
-            Point p = e.getPoint();
-            int rowIndex = rowAtPoint(p);
-            int columnIndex = columnAtPoint(p);
+			String tooltip = "";
+			Point p = e.getPoint();
+			int rowIndex = rowAtPoint(p);
+			int columnIndex = columnAtPoint(p);
 
-            try {
-            	if (columnIndex == 0)
-                tooltip = getValueAt(rowIndex, columnIndex).toString();
-            	else
-            		return null; 
-            	// so blank tooltip does not appear if date is highlighted
-            } catch (RuntimeException ex) {
-            	// do nothing
-            }
+			try {
+				if (columnIndex == 0)
+					tooltip = getValueAt(rowIndex, columnIndex).toString();
+				else
+					return null; 
+				// so blank tooltip does not appear if date is highlighted
+			} catch (RuntimeException ex) {
+				// do nothing
+			}
 
-            return tooltip;
-        }
+			return tooltip;
+		}
 	};
 	private JScrollPane scrollPane = new JScrollPane(taskTable,
 			JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-	
+			JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+
 	public MainWindow(String title) {
 		super(title);
 		this.setLayout(new MigLayout("insets 20"));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		
-		this.setJMenuBar(menubar);
-		menubar.add(aboutMenu);
-		aboutMenu.add(aboutMenuButton); 
-		// simple about message
-		aboutMenuButton.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(MainWindow.this,
-						"Developer email: lotterygame@rambler.ua\n\n"
-						+ "KShramko developments, 2020\n"
-						+ "All rights reserved.",
-						"About",
-						JOptionPane.PLAIN_MESSAGE);
-			}
-			
-		});
+		this.setJMenuBar(menubar);
+		menubar.add(editMenu);
+		// so we can open this menu from keyboard
+		editMenu.setMnemonic(KeyEvent.VK_E);
+		editMenu.add(addMenuButton);
+		editMenu.add(editMenuButton);
+		editMenu.add(deleteMenuButton);
+		editMenu.add(doneMenuButton);
+		
+		menubar.add(helpMenu); 
+		helpMenu.setMnemonic(KeyEvent.VK_H);
 		// help message
 		String helpLine = "This is a simple task list.\n" +
 				"You can add new tasks, delete tasks that you don't need or edit existing ones.\n\n" +
@@ -111,7 +113,7 @@ public class MainWindow extends JFrame {
 				"<html><b><font color=#D3D3D3>Light gray</font> </b>tasks are marked as done by you, the user.\n\n" +
 				"Contact details, if needed, can be found in \"About\" menu.\n" +
 				"\n";
-		aboutMenu.add(helpMenuButton);
+		helpMenu.add(helpMenuButton);
 		helpMenuButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -121,24 +123,39 @@ public class MainWindow extends JFrame {
 						"Help",
 						JOptionPane.PLAIN_MESSAGE);
 			}
-			
+
 		});
-		
+
 		Action f1Action = new AbstractAction("showHelp") {
-			 
-		    @Override
-		    public void actionPerformed(ActionEvent e) {
-		    	JOptionPane.showMessageDialog(MainWindow.this,
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(MainWindow.this,
 						helpLine,
 						"Help",
 						JOptionPane.PLAIN_MESSAGE);
-		    }
+			}
 		};
-		 // Calls a help page by action above when F1 button is pressed.
+		// Calls a help page by action above when F1 button is pressed.
 		helpMenuButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "showHelp");
 		helpMenuButton.getActionMap().put("showHelp", f1Action);
-		
+
+		// simple about message
+		helpMenu.add(aboutMenuButton);
+		aboutMenuButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(MainWindow.this,
+						"Developer email: lotterygame@rambler.ua\n\n"
+								+ "KShramko developments, 2020\n"
+								+ "All rights reserved.",
+								"About",
+								JOptionPane.PLAIN_MESSAGE);
+			}
+
+		});
 		this.add(addButton, "tag add");
 		addButton.addActionListener(new ActionListener() {
 
@@ -147,7 +164,7 @@ public class MainWindow extends JFrame {
 				TaskDialog dialog = new TaskDialog(MainWindow.this, "New task");
 				dialog.setVisible(true);
 			}
-			
+
 		});
 		this.add(editButton, "tag edit");
 		editButton.addActionListener(new ActionListener() {
@@ -161,11 +178,11 @@ public class MainWindow extends JFrame {
 							"Incorrect selection",
 							JOptionPane.PLAIN_MESSAGE);
 				else {
-				TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
-				dialog.setVisible(true);
+					TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
+					dialog.setVisible(true);
 				}
 			}
-			
+
 		});
 		this.add(deleteButton, "tag delete");
 		deleteButton.addActionListener(new ActionListener() {
@@ -181,16 +198,16 @@ public class MainWindow extends JFrame {
 					int resp = JOptionPane.showConfirmDialog(
 							MainWindow.this,
 							"Are you sure you want " +
-							"to delete chosen task?",
-							"Deletion confirmation",
-							JOptionPane.YES_NO_OPTION);
+									"to delete chosen task?",
+									"Deletion confirmation",
+									JOptionPane.YES_NO_OPTION);
 					if (resp == 0) 
 						tableModel.deleteRow(taskTable.getSelectedRow());
 				} // end else
 			} // end actionperformed
 
 		});
-		
+
 		this.add(doneButton, "split 4, wrap");
 		/*
 		 * Tracks the change of done checkbox. 
@@ -202,34 +219,34 @@ public class MainWindow extends JFrame {
 			@Override
 			public void itemStateChanged(ItemEvent e) {
 				int row = taskTable.getSelectedRow();
-	    		if (row != -1) {
-	    			if (e.getStateChange() == ItemEvent.DESELECTED) {
-	    				Task aTask = tasks.get(row);
-	    				aTask.setIsNotActive(false);
-	    				tableModel.updateRow(row, aTask);
-	    				sortByDate();
-	    				tableModel.fireTableDataChanged();
-	    				System.out.println("deselected event is called");
-	    			}	
-	    			else {
-	    				Task aTask = tasks.get(row);
-	    				aTask.setIsNotActive(true);
-	    				while (row < tasks.size() - 1) {
-	    						Task bottomTask = tasks.get(row + 1);
-	    						tasks.set(row + 1, tasks.get(row));
-	    						tasks.set(row, bottomTask);
-	    						row++;
-	    				}
-	    				System.out.println("selected event is called");
-	    				tableModel.fireTableDataChanged();
-	    			} // end else if	
-	    		} // end -1 if
+				if (row != -1) {
+					if (e.getStateChange() == ItemEvent.DESELECTED) {
+						Task aTask = tasks.get(row);
+						aTask.setIsNotActive(false);
+						tableModel.updateRow(row, aTask);
+						sortByDate();
+						tableModel.fireTableDataChanged();
+						System.out.println("deselected event is called");
+					}	
+					else {
+						Task aTask = tasks.get(row);
+						aTask.setIsNotActive(true);
+						while (row < tasks.size() - 1) {
+							Task bottomTask = tasks.get(row + 1);
+							tasks.set(row + 1, tasks.get(row));
+							tasks.set(row, bottomTask);
+							row++;
+						}
+						System.out.println("selected event is called");
+						tableModel.fireTableDataChanged();
+					} // end else if	
+				} // end -1 if
 			}
 		});
-		
-		
+
+
 		this.add(scrollPane, "span 4, wrap");
-		
+
 		taskTable.setSelectionMode(0); // single selection
 		taskTable.setColumnSelectionAllowed(false); // cant select columns
 		taskTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -249,24 +266,24 @@ public class MainWindow extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					JTable source = (JTable) e.getSource();
-		            int row = source.getSelectedRow();
+					int row = source.getSelectedRow();
 					TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
 					dialog.setVisible(true);
 				}	
 			}
 		});
-		
+
 		taskTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() { // a что а как
 			@Override
-		    public Component getTableCellRendererComponent(JTable table,
-		            Object value, boolean isSelected, boolean hasFocus, int row, int col) {
+			public Component getTableCellRendererComponent(JTable table,
+					Object value, boolean isSelected, boolean hasFocus, int row, int col) {
 
 				super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, col);
 
 				Task aTask = tasks.get(row);
 				LocalDateTime currentDate = LocalDateTime.now();
 				Duration duration = Duration.between(currentDate, aTask.getDueDate());
-				
+
 				if (isSelected) {
 					setBackground(Color.BLUE);
 				}
@@ -293,23 +310,23 @@ public class MainWindow extends JFrame {
 		tableModel.insertRow(new Task("Second task", LocalDateTime.of(2020, 12, 15, 11, 40)));
 		tableModel.insertRow(new Task("Third task", LocalDateTime.of(2020, 12, 25, 13, 30)));
 	}
-	
+
 	public void insertRow(Task task) {
 		this.tableModel.insertRow(task);
 	}
-	
+
 	public void updateRow(Task task, int position) {
 		this.tableModel.updateRow(position, task);
 	}
-	
+
 	public Task getATask(int pos) {
 		return tasks.get(pos);
 	}
-	
+
 	public void sortByDate() {
 		Collections.sort(tasks);
 	}
-	
+
 	public static void main(String[] args) {
 		String systemLookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
 		try {
