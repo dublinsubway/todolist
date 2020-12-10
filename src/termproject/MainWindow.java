@@ -192,6 +192,11 @@ public class MainWindow extends JFrame {
 		});
 		
 		this.add(doneButton, "split 4, wrap");
+		/*
+		 * Tracks the change of done checkbox. 
+		 * If it is checked - task is done, so it is being moved to the end of the list.
+		 * Unchecked - list is being sorted again to put it where it belongs.
+		 */
 		doneButton.addItemListener(new ItemListener() {
 
 			@Override
@@ -202,13 +207,23 @@ public class MainWindow extends JFrame {
 	    				Task aTask = tasks.get(row);
 	    				aTask.setIsNotActive(false);
 	    				tableModel.updateRow(row, aTask);
+	    				sortByDate();
+	    				tableModel.fireTableDataChanged();
+	    				System.out.println("deselected event is called");
 	    			}	
 	    			else {
 	    				Task aTask = tasks.get(row);
 	    				aTask.setIsNotActive(true);
-	    				tableModel.updateRow(row, aTask);
+	    				while (row < tasks.size() - 1) {
+	    						Task bottomTask = tasks.get(row + 1);
+	    						tasks.set(row + 1, tasks.get(row));
+	    						tasks.set(row, bottomTask);
+	    						row++;
+	    				}
+	    				System.out.println("selected event is called");
+	    				tableModel.fireTableDataChanged();
 	    			} // end else if	
-	    		} // end tasktable if
+	    		} // end -1 if
 			}
 		});
 		
@@ -216,7 +231,7 @@ public class MainWindow extends JFrame {
 		this.add(scrollPane, "span 4, wrap");
 		
 		taskTable.setSelectionMode(0); // single selection
-		taskTable.setColumnSelectionAllowed(false);
+		taskTable.setColumnSelectionAllowed(false); // cant select columns
 		taskTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
@@ -227,6 +242,7 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
+		// Calls an edit dialog if row is double clicked.
 		taskTable.addMouseListener(new MouseAdapter() {
 
 			@Override

@@ -1,5 +1,7 @@
 package termproject;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,6 +37,7 @@ public class TaskDialog extends JDialog {
 	private MainWindow parent;
 	private JSpinner dateSpinner;
 	private JSpinner timeSpinner;
+	private JLabel errorLabel = new JLabel("error");
 	private int position = -2;
 	
 	
@@ -64,6 +67,12 @@ public class TaskDialog extends JDialog {
         timeSpinner = new JSpinner(timeModel);
         timeSpinner.setEditor(new JSpinner.DateEditor(timeSpinner, "HH:mm"));
         this.add(timeSpinner, "wrap");
+        // error label
+        this.add(errorLabel, "skip 1, split 2, wrap");
+        Font currentFont = errorLabel.getFont();
+        errorLabel.setFont(new Font(currentFont.getName(), Font.PLAIN, 11));
+        errorLabel.setForeground(Color.RED);
+        errorLabel.setVisible(false);
         // ok and cancel buttons
         this.add(okButton, "tag ok");
         this.add(cancelButton, "tag cancel, split 2");
@@ -73,10 +82,9 @@ public class TaskDialog extends JDialog {
     			boolean valid = true;
     			if (descriptionTextField.getText().equals("")) {
     				// if text field is empty
-    				JOptionPane.showMessageDialog(TaskDialog.this,
-    						"Task name is empty. Enter the name of the task.",
-    						"Invalid input",
-    						JOptionPane.PLAIN_MESSAGE);
+    				TaskDialog.this.errorLabel.setText("Task name cannot be empty.");
+    				TaskDialog.this.errorLabel.setVisible(true);
+    				valid = false;
     			} // empty field if end
     			else {
     				try {
@@ -101,10 +109,8 @@ public class TaskDialog extends JDialog {
     				// to not allow user to enter time/date that is in the past/now
     				if (date.isBefore(LocalDateTime.now()) || date.equals(LocalDateTime.now())) {
     					valid = false;
-    					JOptionPane.showMessageDialog(TaskDialog.this,
-    							"Task due date is earlier than current date.",
-    							"Invalid input",
-    							JOptionPane.PLAIN_MESSAGE);
+    					TaskDialog.this.errorLabel.setText("Due date is too early.");
+        				TaskDialog.this.errorLabel.setVisible(true);
     				} // end before if 
     				
     				String taskInfo = descriptionTextField.getText();
