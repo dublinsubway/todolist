@@ -1,8 +1,9 @@
 package termproject;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class Task implements Comparable<Task> {
+public class Task implements Comparable<Task>, Serializable {
 	
 	private String description;
 	private LocalDateTime dueDate;

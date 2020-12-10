@@ -162,7 +162,7 @@ public class TaskDialog extends JDialog {
 			e.printStackTrace();
 		}
 		timeSpinner.setValue(date);
-		
+		// might optimize later
 		
 	} // end edit constructor
 	

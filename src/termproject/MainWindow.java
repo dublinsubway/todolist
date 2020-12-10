@@ -98,13 +98,23 @@ public class MainWindow extends JFrame {
 			}
 			
 		});
+		String helpLine = "This is a simple task list.\n" +
+				"You can add new tasks, delete tasks that you don't need or edit existing ones.\n\n" +
+				"Tasks are coloured differently, according to the time that is left until deadline.\n" +
+				"<html><b><font color=#FF0000>Red</font></b> colour shows that the task is overdue.\n" +
+				"Mark it as done or delete it if you do not want to see it.\n" +
+				"<html><b><font color=#FFA500>Orange</font></b> colour means you have 24 hours or less left.\n" +
+				"<html><b><font color=#FF00FF>Magenta</font> </b>in the table lets you know you have less than 3 days to finish it up.\n" +
+				"<html><b><font color=#D3D3D3>Light gray</font> </b>tasks are marked as done by you, the user.\n\n" +
+				"Contact details, if needed, can be found in \"About\" menu.\n" +
+				"\n";
 		aboutMenu.add(helpMenuButton);
 		helpMenuButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(MainWindow.this,
-						"helptext",
+						helpLine,
 						"Help",
 						JOptionPane.PLAIN_MESSAGE);
 			}
@@ -116,11 +126,12 @@ public class MainWindow extends JFrame {
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
 		    	JOptionPane.showMessageDialog(MainWindow.this,
-						"helptext",
+						helpLine,
 						"Help",
 						JOptionPane.PLAIN_MESSAGE);
 		    }
 		};
+		 // Calls a help page by action above when F1 button is pressed.
 		helpMenuButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "showHelp");
 		helpMenuButton.getActionMap().put("showHelp", f1Action);
