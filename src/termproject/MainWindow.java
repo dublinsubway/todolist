@@ -41,15 +41,13 @@ public class MainWindow extends JFrame {
 	
 	private JMenuBar menubar = new JMenuBar();
 	private JMenu aboutMenu = new JMenu("About");
-	private JMenuItem aboutMenuButton = new JMenuItem("About...");
-	private JMenuItem helpMenuButton = new JMenuItem("Help...");
+	private JMenuItem aboutMenuButton = new JMenuItem("About");
+	private JMenuItem helpMenuButton = new JMenuItem("Help");
 	
 	private JCheckBox doneButton = new JCheckBox("Done");
 	private JButton addButton = new JButton("Add");
 	private JButton deleteButton = new JButton("Delete");
 	private JButton editButton = new JButton("Edit");
-	private JButton moveUpButton = new JButton("Move up");
-	private JButton moveDownButton = new JButton("Move down");
 	
 	private List<Task> tasks = new ArrayList<Task>();
 	private TaskTableModel tableModel = new TaskTableModel(tasks);
@@ -66,6 +64,9 @@ public class MainWindow extends JFrame {
             try {
             	if (columnIndex == 0)
                 tooltip = getValueAt(rowIndex, columnIndex).toString();
+            	else
+            		return null; 
+            	// so blank tooltip does not appear if date is highlighted
             } catch (RuntimeException ex) {
             	// do nothing
             }
@@ -84,7 +85,8 @@ public class MainWindow extends JFrame {
 		
 		this.setJMenuBar(menubar);
 		menubar.add(aboutMenu);
-		aboutMenu.add(aboutMenuButton);
+		aboutMenu.add(aboutMenuButton); 
+		// simple about message
 		aboutMenuButton.addActionListener(new ActionListener() {
 
 			@Override
@@ -98,6 +100,7 @@ public class MainWindow extends JFrame {
 			}
 			
 		});
+		// help message
 		String helpLine = "This is a simple task list.\n" +
 				"You can add new tasks, delete tasks that you don't need or edit existing ones.\n\n" +
 				"Tasks are coloured differently, according to the time that is left until deadline.\n" +
@@ -152,7 +155,7 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				int row = taskTable.getSelectedRow();
-				if (row == -1)
+				if (row == -1) // -1 is given when no row is selected
 					JOptionPane.showMessageDialog(MainWindow.this,
 							"No row is selected to be edited.",
 							"Incorrect selection",
@@ -187,40 +190,8 @@ public class MainWindow extends JFrame {
 			} // end actionperformed
 
 		});
-		this.add(moveUpButton);
-		moveUpButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int row = taskTable.getSelectedRow();
-				if (row > 0) {
-					Task topTask = tasks.get(row - 1);
-					tasks.set(row - 1, tasks.get(row));
-					tasks.set(row, topTask);
-					tableModel.fireTableRowsUpdated(row - 1, row);
-				}
-				
-			}
-			
-		});
-		this.add(moveDownButton);
-		moveDownButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int row = taskTable.getSelectedRow();
-				if (row != -1 && row != tasks.size()) {
-					Task bottomTask = tasks.get(row + 1);
-					tasks.set(row + 1, tasks.get(row));
-					tasks.set(row, bottomTask);
-					tableModel.fireTableRowsUpdated(row, row + 1);
-				}
-				
-			}
-			
-		});
 		
-		this.add(doneButton, "split 6, wrap");
+		this.add(doneButton, "split 4, wrap");
 		doneButton.addItemListener(new ItemListener() {
 
 			@Override
@@ -242,7 +213,7 @@ public class MainWindow extends JFrame {
 		});
 		
 		
-		this.add(scrollPane, "span 6, wrap");
+		this.add(scrollPane, "span 4, wrap");
 		
 		taskTable.setSelectionMode(0); // single selection
 		taskTable.setColumnSelectionAllowed(false);
@@ -303,7 +274,7 @@ public class MainWindow extends JFrame {
 		taskTable.getColumnModel().getColumn(1).setPreferredWidth(50);
 		// hardwiring values
 		tableModel.insertRow(new Task("First task", LocalDateTime.of(2020, 12, 8, 12, 10)));
-		tableModel.insertRow(new Task("Second task", LocalDateTime.of(2020, 12, 10, 11, 40)));
+		tableModel.insertRow(new Task("Second task", LocalDateTime.of(2020, 12, 15, 11, 40)));
 		tableModel.insertRow(new Task("Third task", LocalDateTime.of(2020, 12, 25, 13, 30)));
 	}
 	
