@@ -41,13 +41,13 @@ public class MainWindow extends JFrame {
 
 	private JMenuBar menubar = new JMenuBar();
 	
-	private JMenu editMenu = new JMenu("Edit");
+	private JMenu editMenu = new JMenu("<html><u>E</u>dit");
 	private JMenuItem addMenuButton = new JMenuItem("Add");
 	private JMenuItem editMenuButton = new JMenuItem("Edit");
 	private JMenuItem deleteMenuButton = new JMenuItem("Delete");
 	private JMenuItem doneMenuButton = new JMenuItem("(Un)done");
 	
-	private JMenu helpMenu = new JMenu("Help");
+	private JMenu helpMenu = new JMenu("<html><u>H</u>elp");
 	private JMenuItem aboutMenuButton = new JMenuItem("About");
 	private JMenuItem helpMenuButton = new JMenuItem("Help");
 
@@ -96,8 +96,56 @@ public class MainWindow extends JFrame {
 		// so we can open this menu from keyboard
 		editMenu.setMnemonic(KeyEvent.VK_E);
 		editMenu.add(addMenuButton);
+		addMenuButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				TaskDialog dialog = new TaskDialog(MainWindow.this, "New task");
+				dialog.setVisible(true);
+			}
+
+		});
 		editMenu.add(editMenuButton);
+		editMenuButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int row = taskTable.getSelectedRow();
+				if (row == -1) // -1 is given when no row is selected
+					JOptionPane.showMessageDialog(MainWindow.this,
+							"No row is selected to be edited.",
+							"Incorrect selection",
+							JOptionPane.PLAIN_MESSAGE);
+				else {
+					TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
+					dialog.setVisible(true);
+				}
+			}
+
+		});
 		editMenu.add(deleteMenuButton);
+		deleteMenuButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (taskTable.getSelectedRow() == -1)
+					JOptionPane.showMessageDialog(MainWindow.this,
+							"No row is selected to be deleted.",
+							"Incorrect selection",
+							JOptionPane.PLAIN_MESSAGE);
+				else {
+					int resp = JOptionPane.showConfirmDialog(
+							MainWindow.this,
+							"Are you sure you want " +
+									"to delete chosen task?",
+									"Deletion confirmation",
+									JOptionPane.YES_NO_OPTION);
+					if (resp == 0) 
+						tableModel.deleteRow(taskTable.getSelectedRow());
+				} // end else
+			} // end actionperformed
+
+		});
 		editMenu.add(doneMenuButton);
 		
 		menubar.add(helpMenu); 
@@ -113,18 +161,6 @@ public class MainWindow extends JFrame {
 				"<html><b><font color=#D3D3D3>Light gray</font> </b>tasks are marked as done by you, the user.\n\n" +
 				"Contact details, if needed, can be found in \"About\" menu.\n" +
 				"\n";
-		helpMenu.add(helpMenuButton);
-		helpMenuButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(MainWindow.this,
-						helpLine,
-						"Help",
-						JOptionPane.PLAIN_MESSAGE);
-			}
-
-		});
 
 		Action f1Action = new AbstractAction("showHelp") {
 
@@ -140,7 +176,9 @@ public class MainWindow extends JFrame {
 		helpMenuButton.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(
 				KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0), "showHelp");
 		helpMenuButton.getActionMap().put("showHelp", f1Action);
-
+		
+		helpMenu.add(helpMenuButton);
+		helpMenuButton.addActionListener(f1Action);
 		// simple about message
 		helpMenu.add(aboutMenuButton);
 		aboutMenuButton.addActionListener(new ActionListener() {
@@ -207,7 +245,6 @@ public class MainWindow extends JFrame {
 			} // end actionperformed
 
 		});
-
 		this.add(doneButton, "split 4, wrap");
 		/*
 		 * Tracks the change of done checkbox. 
@@ -243,8 +280,8 @@ public class MainWindow extends JFrame {
 				} // end -1 if
 			}
 		});
-
-
+		
+		
 		this.add(scrollPane, "span 4, wrap");
 
 		taskTable.setSelectionMode(0); // single selection
@@ -326,6 +363,7 @@ public class MainWindow extends JFrame {
 	public void sortByDate() {
 		Collections.sort(tasks);
 	}
+	
 
 	public static void main(String[] args) {
 		String systemLookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
