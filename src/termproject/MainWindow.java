@@ -31,7 +31,6 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -59,8 +58,7 @@ public class MainWindow extends JFrame {
 	private JMenuItem editMenuButton = new JMenuItem("Edit");
 	private JMenuItem deleteMenuButton = new JMenuItem("Delete");
 	private JMenuItem doneMenuButton = new JMenuItem("(Un)done");
-	private JMenuItem saveMenuButton = new JMenuItem("Save...");
-	private JMenuItem openMenuButton = new JMenuItem("Open...");
+	private JMenuItem saveMenuButton = new JMenuItem("Save");
 	
 	private JMenu helpMenu = new JMenu("<html><u>H</u>elp");
 	private JMenuItem aboutMenuButton = new JMenuItem("About");
@@ -70,12 +68,9 @@ public class MainWindow extends JFrame {
 	private JButton addButton = new JButton("Add");
 	private JButton deleteButton = new JButton("Delete");
 	private JButton editButton = new JButton("Edit");
-	private JButton saveButton = new JButton("Save...");
-	private JButton openButton = new JButton("Open...");
+	private JButton saveButton = new JButton("Save");
 	
 	private List<Task> tasks = new ArrayList<Task>();
-	
-	private JFileChooser fc = new JFileChooser();
 	
 	private TaskTableModel tableModel = new TaskTableModel(tasks);
 	private JTable taskTable = new JTable(tableModel) {
@@ -113,7 +108,8 @@ public class MainWindow extends JFrame {
 		super(title);
 		this.setLayout(new MigLayout("insets 20"));
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+		openFileOnStartup();
+		
 		this.setJMenuBar(menubar);
 		menubar.add(editMenu);
 		// so we can open this menu from keyboard
@@ -176,6 +172,17 @@ public class MainWindow extends JFrame {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 						File file = new File(".", "tasks.dat");
+						try {
+							if (file.createNewFile())
+								; // do nothing
+							else {
+								file.delete();
+								file.createNewFile();
+							} // end else
+						}  catch (IOException ex) {
+						      ex.printStackTrace();
+						    }
+						
 						try ( 
 								FileOutputStream fos = new FileOutputStream(file);
 								ObjectOutputStream oos = new ObjectOutputStream(fos)
@@ -191,15 +198,6 @@ public class MainWindow extends JFrame {
 					
 				}
 				
-		});
-		editMenu.add(openMenuButton);
-		openMenuButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
 		});
 		
 		menubar.add(helpMenu); 
@@ -310,6 +308,17 @@ public class MainWindow extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 					File file = new File(".", "tasks.dat");
+					try {
+						if (file.createNewFile())
+							; // do nothing
+						else {
+							file.delete();
+							file.createNewFile();
+						} // end else
+					}  catch (IOException ex) {
+					      ex.printStackTrace();
+					    }
+					
 					try ( 
 							FileOutputStream fos = new FileOutputStream(file);
 							ObjectOutputStream oos = new ObjectOutputStream(fos)
@@ -326,38 +335,7 @@ public class MainWindow extends JFrame {
 			}
 			
 		});
-		this.add(openButton);
-		openButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int status = fc.showOpenDialog(MainWindow.this);
-				if (status == JFileChooser.ERROR_OPTION)
-					JOptionPane.showMessageDialog(MainWindow.this,
-							"Unfortunately, an error ocurred. Please contact the developer.",
-							"Unknown error",
-							JOptionPane.PLAIN_MESSAGE);
-				else if (status == JFileChooser.APPROVE_OPTION) {
-					File file = fc.getSelectedFile();
-					try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
-						tasks = (List<Task>) ois.readObject();
-						tableModel = new TaskTableModel(tasks);
-						taskTable.setModel(tableModel);
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (ClassNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				}
-			}
-			
-		});
-		this.add(doneButton, "split 6, wrap");
+		this.add(doneButton, "split 5, wrap");
 		/*
 		 * Tracks the change of done checkbox. 
 		 * If it is checked - task is done, so it is being moved to the end of the list.
@@ -394,7 +372,7 @@ public class MainWindow extends JFrame {
 		});
 		
 		
-		this.add(scrollPane, "span 6, wrap");
+		this.add(scrollPane, "span 5, wrap");
 
 		taskTable.setSelectionMode(0); // single selection
 		taskTable.setColumnSelectionAllowed(false); // cant select columns
@@ -459,10 +437,6 @@ public class MainWindow extends JFrame {
 		// size
 		scrollPane.setPreferredSize(new Dimension(400, 200));
 		taskTable.getColumnModel().getColumn(1).setPreferredWidth(50);
-		// hardwiring values
-		tableModel.insertRow(new Task("First task", LocalDateTime.of(2020, 12, 8, 12, 10)));
-		tableModel.insertRow(new Task("Second task", LocalDateTime.of(2020, 12, 15, 11, 40)));
-		tableModel.insertRow(new Task("Third task", LocalDateTime.of(2020, 12, 25, 13, 30)));
 	}
 
 	public void insertRow(Task task) {
@@ -479,6 +453,27 @@ public class MainWindow extends JFrame {
 
 	public void sortByDate() {
 		Collections.sort(tasks);
+	}
+	
+	public void openFileOnStartup () {
+		File file = new File("tasks.dat");
+		
+		if (file.exists()) {
+		try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
+			tasks = (List<Task>) ois.readObject();
+			tableModel = new TaskTableModel(tasks);
+			taskTable.setModel(tableModel);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		} // end if exists
 	}
 	
 
