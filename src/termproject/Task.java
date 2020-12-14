@@ -5,6 +5,10 @@ import java.time.LocalDateTime;
 
 public class Task implements Comparable<Task>, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String description;
 	private LocalDateTime dueDate;
 	boolean isNotActive;

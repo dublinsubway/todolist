@@ -13,6 +13,13 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,6 +31,7 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -39,6 +47,11 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 public class MainWindow extends JFrame {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private JMenuBar menubar = new JMenuBar();
 	
 	private JMenu editMenu = new JMenu("<html><u>E</u>dit");
@@ -46,6 +59,8 @@ public class MainWindow extends JFrame {
 	private JMenuItem editMenuButton = new JMenuItem("Edit");
 	private JMenuItem deleteMenuButton = new JMenuItem("Delete");
 	private JMenuItem doneMenuButton = new JMenuItem("(Un)done");
+	private JMenuItem saveMenuButton = new JMenuItem("Save...");
+	private JMenuItem openMenuButton = new JMenuItem("Open...");
 	
 	private JMenu helpMenu = new JMenu("<html><u>H</u>elp");
 	private JMenuItem aboutMenuButton = new JMenuItem("About");
@@ -55,11 +70,19 @@ public class MainWindow extends JFrame {
 	private JButton addButton = new JButton("Add");
 	private JButton deleteButton = new JButton("Delete");
 	private JButton editButton = new JButton("Edit");
-
+	private JButton saveButton = new JButton("Save...");
+	private JButton openButton = new JButton("Open...");
+	
 	private List<Task> tasks = new ArrayList<Task>();
+	
+	private JFileChooser fc = new JFileChooser();
 	
 	private TaskTableModel tableModel = new TaskTableModel(tasks);
 	private JTable taskTable = new JTable(tableModel) {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		public boolean editCellAt(int row, int column, java.util.EventObject e) {
 			return false;
 		}
@@ -147,6 +170,37 @@ public class MainWindow extends JFrame {
 
 		});
 		editMenu.add(doneMenuButton);
+		editMenu.add(saveMenuButton);
+		saveMenuButton.addActionListener(new ActionListener() {
+				// as i dont need user input in this, it is done automatically
+				@Override
+				public void actionPerformed(ActionEvent e) {
+						File file = new File(".", "tasks.dat");
+						try ( 
+								FileOutputStream fos = new FileOutputStream(file);
+								ObjectOutputStream oos = new ObjectOutputStream(fos)
+								){
+							oos.writeObject(tasks);
+						} catch (FileNotFoundException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					
+				}
+				
+		});
+		editMenu.add(openMenuButton);
+		openMenuButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
 		
 		menubar.add(helpMenu); 
 		helpMenu.setMnemonic(KeyEvent.VK_H);
@@ -163,6 +217,11 @@ public class MainWindow extends JFrame {
 				"\n";
 
 		Action f1Action = new AbstractAction("showHelp") {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -245,7 +304,60 @@ public class MainWindow extends JFrame {
 			} // end actionperformed
 
 		});
-		this.add(doneButton, "split 4, wrap");
+		this.add(saveButton);
+		saveButton.addActionListener(new ActionListener() {
+			// as i dont need user input in this, it is done automatically
+			@Override
+			public void actionPerformed(ActionEvent e) {
+					File file = new File(".", "tasks.dat");
+					try ( 
+							FileOutputStream fos = new FileOutputStream(file);
+							ObjectOutputStream oos = new ObjectOutputStream(fos)
+							){
+						oos.writeObject(tasks);
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				
+			}
+			
+		});
+		this.add(openButton);
+		openButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				int status = fc.showOpenDialog(MainWindow.this);
+				if (status == JFileChooser.ERROR_OPTION)
+					JOptionPane.showMessageDialog(MainWindow.this,
+							"Unfortunately, an error ocurred. Please contact the developer.",
+							"Unknown error",
+							JOptionPane.PLAIN_MESSAGE);
+				else if (status == JFileChooser.APPROVE_OPTION) {
+					File file = fc.getSelectedFile();
+					try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))){
+						tasks = (List<Task>) ois.readObject();
+						tableModel = new TaskTableModel(tasks);
+						taskTable.setModel(tableModel);
+					} catch (FileNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (ClassNotFoundException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
+			}
+			
+		});
+		this.add(doneButton, "split 6, wrap");
 		/*
 		 * Tracks the change of done checkbox. 
 		 * If it is checked - task is done, so it is being moved to the end of the list.
@@ -282,7 +394,7 @@ public class MainWindow extends JFrame {
 		});
 		
 		
-		this.add(scrollPane, "span 4, wrap");
+		this.add(scrollPane, "span 6, wrap");
 
 		taskTable.setSelectionMode(0); // single selection
 		taskTable.setColumnSelectionAllowed(false); // cant select columns
@@ -311,6 +423,11 @@ public class MainWindow extends JFrame {
 		});
 
 		taskTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() { // a что а как
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			@Override
 			public Component getTableCellRendererComponent(JTable table,
 					Object value, boolean isSelected, boolean hasFocus, int row, int col) {

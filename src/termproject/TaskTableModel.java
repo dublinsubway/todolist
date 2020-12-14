@@ -7,6 +7,10 @@ import javax.swing.table.AbstractTableModel;
 
 public class TaskTableModel extends AbstractTableModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private List<Task> tasks;
 	private String[] columnNames = {"Task description", "Due date"};
 	private DateTimeFormatter df = DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm");

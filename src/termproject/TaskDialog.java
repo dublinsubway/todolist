@@ -26,6 +26,10 @@ import net.miginfocom.swing.MigLayout;
 
 public class TaskDialog extends JDialog {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JLabel descriptionLabel = new JLabel("Description:");
 	private JTextField descriptionTextField = new JTextField(15);
 	private JLabel dateSpinnerLabel = new JLabel("Deadline date:");
