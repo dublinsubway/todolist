@@ -44,7 +44,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame implements ActionListener {
 
 	/**
 	 * 
@@ -115,57 +115,13 @@ public class MainWindow extends JFrame {
 		// so we can open this menu from keyboard
 		editMenu.setMnemonic(KeyEvent.VK_E);
 		editMenu.add(addMenuButton);
-		addMenuButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				TaskDialog dialog = new TaskDialog(MainWindow.this, "New task");
-				dialog.setVisible(true);
-			}
-
-		});
+		addMenuButton.addActionListener(this);
 		editMenu.add(editMenuButton);
-		editMenuButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int row = taskTable.getSelectedRow();
-				if (row == -1) // -1 is given when no row is selected
-					JOptionPane.showMessageDialog(MainWindow.this,
-							"No row is selected to be edited.",
-							"Incorrect selection",
-							JOptionPane.PLAIN_MESSAGE);
-				else {
-					TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
-					dialog.setVisible(true);
-				}
-			}
-
-		});
+		editMenuButton.addActionListener(this);
 		editMenu.add(deleteMenuButton);
-		deleteMenuButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (taskTable.getSelectedRow() == -1)
-					JOptionPane.showMessageDialog(MainWindow.this,
-							"No row is selected to be deleted.",
-							"Incorrect selection",
-							JOptionPane.PLAIN_MESSAGE);
-				else {
-					int resp = JOptionPane.showConfirmDialog(
-							MainWindow.this,
-							"Are you sure you want " +
-									"to delete chosen task?",
-									"Deletion confirmation",
-									JOptionPane.YES_NO_OPTION);
-					if (resp == 0) 
-						tableModel.deleteRow(taskTable.getSelectedRow());
-				} // end else
-			} // end actionperformed
-
-		});
+		deleteMenuButton.addActionListener(this);
 		editMenu.add(doneMenuButton);
+		doneMenuButton.addActionListener(this);
 		editMenu.add(saveMenuButton);
 		saveMenuButton.addActionListener(new ActionListener() {
 				// as i dont need user input in this, it is done automatically
@@ -252,89 +208,13 @@ public class MainWindow extends JFrame {
 
 		});
 		this.add(addButton, "tag add");
-		addButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				TaskDialog dialog = new TaskDialog(MainWindow.this, "New task");
-				dialog.setVisible(true);
-			}
-
-		});
+		addButton.addActionListener(this);
 		this.add(editButton, "tag edit");
-		editButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				int row = taskTable.getSelectedRow();
-				if (row == -1) // -1 is given when no row is selected
-					JOptionPane.showMessageDialog(MainWindow.this,
-							"No row is selected to be edited.",
-							"Incorrect selection",
-							JOptionPane.PLAIN_MESSAGE);
-				else {
-					TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
-					dialog.setVisible(true);
-				}
-			}
-
-		});
+		editButton.addActionListener(this);
 		this.add(deleteButton, "tag delete");
-		deleteButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (taskTable.getSelectedRow() == -1)
-					JOptionPane.showMessageDialog(MainWindow.this,
-							"No row is selected to be deleted.",
-							"Incorrect selection",
-							JOptionPane.PLAIN_MESSAGE);
-				else {
-					int resp = JOptionPane.showConfirmDialog(
-							MainWindow.this,
-							"Are you sure you want " +
-									"to delete chosen task?",
-									"Deletion confirmation",
-									JOptionPane.YES_NO_OPTION);
-					if (resp == 0) 
-						tableModel.deleteRow(taskTable.getSelectedRow());
-				} // end else
-			} // end actionperformed
-
-		});
+		deleteButton.addActionListener(this);
 		this.add(saveButton);
-		saveButton.addActionListener(new ActionListener() {
-			// as i dont need user input in this, it is done automatically
-			@Override
-			public void actionPerformed(ActionEvent e) {
-					File file = new File(".", "tasks.dat");
-					try {
-						if (file.createNewFile())
-							; // do nothing
-						else {
-							file.delete();
-							file.createNewFile();
-						} // end else
-					}  catch (IOException ex) {
-					      ex.printStackTrace();
-					    }
-					
-					try ( 
-							FileOutputStream fos = new FileOutputStream(file);
-							ObjectOutputStream oos = new ObjectOutputStream(fos)
-							){
-						oos.writeObject(tasks);
-					} catch (FileNotFoundException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				
-			}
-			
-		});
+		saveButton.addActionListener(this);
 		this.add(doneButton, "split 5, wrap");
 		/*
 		 * Tracks the change of done checkbox. 
@@ -439,6 +319,75 @@ public class MainWindow extends JFrame {
 		taskTable.getColumnModel().getColumn(1).setPreferredWidth(50);
 	}
 
+	/*
+	 * As all items are called by at least two ways to make it more accessible for keyboard users
+	 * (menubar and button), the actionperformed is here
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == addButton || e.getSource() == addMenuButton) {
+			TaskDialog dialog = new TaskDialog(MainWindow.this, "New task");
+			dialog.setVisible(true);
+		}
+		else if (e.getSource() == editButton || e.getSource() == editMenuButton) {
+			int row = taskTable.getSelectedRow();
+			if (row == -1) // -1 is given when no row is selected
+				JOptionPane.showMessageDialog(MainWindow.this,
+						"No row is selected to be edited.",
+						"Incorrect selection",
+						JOptionPane.PLAIN_MESSAGE);
+			else {
+				TaskDialog dialog = new TaskDialog(MainWindow.this, "Edit task", row);
+				dialog.setVisible(true);
+			}
+		}
+		else if (e.getSource() == deleteButton || e.getSource() == deleteMenuButton) {
+			if (taskTable.getSelectedRow() == -1)
+				JOptionPane.showMessageDialog(MainWindow.this,
+						"No row is selected to be deleted.",
+						"Incorrect selection",
+						JOptionPane.PLAIN_MESSAGE);
+			else {
+				int resp = JOptionPane.showConfirmDialog(
+						MainWindow.this,
+						"Are you sure you want " +
+								"to delete chosen task?",
+								"Deletion confirmation",
+								JOptionPane.YES_NO_OPTION);
+				if (resp == 0) 
+					tableModel.deleteRow(taskTable.getSelectedRow());
+			} // end else
+		} else if (e.getSource() == doneButton || e.getSource() == doneMenuButton) {
+			// work
+		} else if (e.getSource() == saveButton || e.getSource() == saveMenuButton) {
+			File file = new File(".", "tasks.dat");
+			try {
+				if (file.createNewFile())
+					; // do nothing
+				else {
+					file.delete();
+					file.createNewFile();
+				} // end else
+			}  catch (IOException ex) {
+			      ex.printStackTrace();
+			    }
+			
+			try ( 
+					FileOutputStream fos = new FileOutputStream(file);
+					ObjectOutputStream oos = new ObjectOutputStream(fos)
+					){
+				oos.writeObject(tasks);
+			} catch (FileNotFoundException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		
+	} // end actionperformed
+	
 	public void insertRow(Task task) {
 		this.tableModel.insertRow(task);
 	}
