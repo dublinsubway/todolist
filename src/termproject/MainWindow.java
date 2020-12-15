@@ -221,35 +221,7 @@ public class MainWindow extends JFrame implements ActionListener {
 		 * If it is checked - task is done, so it is being moved to the end of the list.
 		 * Unchecked - list is being sorted again to put it where it belongs.
 		 */
-		doneButton.addItemListener(new ItemListener() {
-
-			@Override
-			public void itemStateChanged(ItemEvent e) {
-				int row = taskTable.getSelectedRow();
-				if (row != -1) {
-					if (e.getStateChange() == ItemEvent.DESELECTED) {
-						Task aTask = tasks.get(row);
-						aTask.setIsNotActive(false);
-						tableModel.updateRow(row, aTask);
-						sortByDate();
-						tableModel.fireTableDataChanged();
-						System.out.println("deselected event is called");
-					}	
-					else {
-						Task aTask = tasks.get(row);
-						aTask.setIsNotActive(true);
-						while (row < tasks.size() - 1) {
-							Task bottomTask = tasks.get(row + 1);
-							tasks.set(row + 1, tasks.get(row));
-							tasks.set(row, bottomTask);
-							row++;
-						}
-						System.out.println("selected event is called");
-						tableModel.fireTableDataChanged();
-					} // end else if	
-				} // end -1 if
-			}
-		});
+		doneButton.addActionListener(this);
 		
 		
 		this.add(scrollPane, "span 5, wrap");
@@ -260,12 +232,12 @@ public class MainWindow extends JFrame implements ActionListener {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
 				int row = taskTable.getSelectedRow();
-				if (row != -1) {
+				if (row >= 0) {
 					Task aTask = tasks.get(row);
 					doneButton.setSelected(aTask.getIsNotActive());
 				}
 			}
-		});
+		}); // think if i need it
 		// Calls an edit dialog if row is double clicked.
 		taskTable.addMouseListener(new MouseAdapter() {
 
@@ -358,7 +330,25 @@ public class MainWindow extends JFrame implements ActionListener {
 					tableModel.deleteRow(taskTable.getSelectedRow());
 			} // end else
 		} else if (e.getSource() == doneButton || e.getSource() == doneMenuButton) {
-			// work
+			int row = taskTable.getSelectedRow();
+			if (row != -1) {
+				Task aTask = tasks.get(row);
+				if (aTask.getIsNotActive()) {
+					aTask.setIsNotActive(false);
+					sortByDate();
+					tableModel.fireTableDataChanged();
+				}	
+				else {
+					aTask.setIsNotActive(true);
+					while (row < tasks.size() - 1) {
+						Task bottomTask = tasks.get(row + 1);
+						tasks.set(row + 1, tasks.get(row));
+						tasks.set(row, bottomTask);
+						row++;
+					}
+					tableModel.fireTableDataChanged();
+				} // end else if	
+			} // end -1 if
 		} else if (e.getSource() == saveButton || e.getSource() == saveMenuButton) {
 			File file = new File(".", "tasks.dat");
 			try {

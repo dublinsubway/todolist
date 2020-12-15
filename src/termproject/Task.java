@@ -46,7 +46,7 @@ public class Task implements Comparable<Task>, Serializable {
 	@Override
 	  public int compareTo(Task t) {
 		if (isNotActive)
-			return 0;
+			return 1;
 		else
 			return getDueDate().compareTo(t.getDueDate());
 	  }
