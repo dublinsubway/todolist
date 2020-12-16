@@ -8,8 +8,6 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -53,6 +51,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
 	private JMenuBar menubar = new JMenuBar();
 	
+	// first letter is underlined as alt + e opens that menu
 	private JMenu editMenu = new JMenu("<html><u>E</u>dit");
 	private JMenuItem addMenuButton = new JMenuItem("Add");
 	private JMenuItem editMenuButton = new JMenuItem("Edit");
@@ -91,8 +90,8 @@ public class MainWindow extends JFrame implements ActionListener {
 				if (columnIndex == 0)
 					tooltip = getValueAt(rowIndex, columnIndex).toString();
 				else
+					// so blank tooltip does not appear if date is highlighted
 					return null; 
-				// so blank tooltip does not appear if date is highlighted
 			} catch (RuntimeException ex) {
 				// do nothing
 			}
@@ -123,39 +122,7 @@ public class MainWindow extends JFrame implements ActionListener {
 		editMenu.add(doneMenuButton);
 		doneMenuButton.addActionListener(this);
 		editMenu.add(saveMenuButton);
-		saveMenuButton.addActionListener(new ActionListener() {
-				// as i dont need user input in this, it is done automatically
-				@Override
-				public void actionPerformed(ActionEvent e) {
-						File file = new File(".", "tasks.dat");
-						try {
-							if (file.createNewFile())
-								; // do nothing
-							else {
-								file.delete();
-								file.createNewFile();
-							} // end else
-						}  catch (IOException ex) {
-						      ex.printStackTrace();
-						    }
-						
-						try ( 
-								FileOutputStream fos = new FileOutputStream(file);
-								ObjectOutputStream oos = new ObjectOutputStream(fos)
-								){
-							oos.writeObject(tasks);
-						} catch (FileNotFoundException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-					
-				}
-				
-		});
-		
+		saveMenuButton.addActionListener(this);
 		menubar.add(helpMenu); 
 		helpMenu.setMnemonic(KeyEvent.VK_H);
 		// help message
@@ -173,7 +140,7 @@ public class MainWindow extends JFrame implements ActionListener {
 		Action f1Action = new AbstractAction("showHelp") {
 
 			/**
-			 * 
+			 * Action for help page.
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -216,11 +183,6 @@ public class MainWindow extends JFrame implements ActionListener {
 		this.add(saveButton);
 		saveButton.addActionListener(this);
 		this.add(doneButton, "split 5, wrap");
-		/*
-		 * Tracks the change of done checkbox. 
-		 * If it is checked - task is done, so it is being moved to the end of the list.
-		 * Unchecked - list is being sorted again to put it where it belongs.
-		 */
 		doneButton.addActionListener(this);
 		
 		
@@ -237,7 +199,7 @@ public class MainWindow extends JFrame implements ActionListener {
 					doneButton.setSelected(aTask.getIsNotActive());
 				}
 			}
-		}); // think if i need it
+		});
 		// Calls an edit dialog if row is double clicked.
 		taskTable.addMouseListener(new MouseAdapter() {
 
@@ -254,7 +216,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
 		taskTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() { // a что а как
 			/**
-			 * 
+			 * This is used to color background of the tables depending on date.
 			 */
 			private static final long serialVersionUID = 1L;
 
@@ -293,7 +255,7 @@ public class MainWindow extends JFrame implements ActionListener {
 
 	/*
 	 * As all items are called by at least two ways to make it more accessible for keyboard users
-	 * (menubar and button), the actionperformed is here
+	 * (menubar and button), the actionperformed is here and not anonymous
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -330,26 +292,33 @@ public class MainWindow extends JFrame implements ActionListener {
 					tableModel.deleteRow(taskTable.getSelectedRow());
 			} // end else
 		} else if (e.getSource() == doneButton || e.getSource() == doneMenuButton) {
+			/*
+			 * Even though that is a checkbox, it listens to the boolean variable in task class. 
+			 * If it is set to true - task is done, so it is being moved to the end of the list.
+			 * Otherwise list is being sorted again to put task where it belongs.
+			 */
 			int row = taskTable.getSelectedRow();
 			if (row != -1) {
 				Task aTask = tasks.get(row);
 				if (aTask.getIsNotActive()) {
 					aTask.setIsNotActive(false);
-					sortByDate();
-					tableModel.fireTableDataChanged();
+					tableModel.updateRow(row, aTask);
 				}	
 				else {
 					aTask.setIsNotActive(true);
+					tableModel.updateRow(row, aTask);
 					while (row < tasks.size() - 1) {
 						Task bottomTask = tasks.get(row + 1);
 						tasks.set(row + 1, tasks.get(row));
 						tasks.set(row, bottomTask);
 						row++;
 					}
-					tableModel.fireTableDataChanged();
-				} // end else if	
+				} // end else if
+				sortByDate();
+				tableModel.fireTableDataChanged();
 			} // end -1 if
 		} else if (e.getSource() == saveButton || e.getSource() == saveMenuButton) {
+			// handling of file object
 			File file = new File(".", "tasks.dat");
 			try {
 				if (file.createNewFile())
@@ -361,7 +330,7 @@ public class MainWindow extends JFrame implements ActionListener {
 			}  catch (IOException ex) {
 			      ex.printStackTrace();
 			    }
-			
+			// actually writing data
 			try ( 
 					FileOutputStream fos = new FileOutputStream(file);
 					ObjectOutputStream oos = new ObjectOutputStream(fos)
@@ -411,7 +380,7 @@ public class MainWindow extends JFrame implements ActionListener {
 		} catch (ClassNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
-		}
+		} // end catch
 		} // end if exists
 	}
 	

@@ -49,7 +49,7 @@ public class TaskTableModel extends AbstractTableModel {
 	}
 	
 	 public boolean isCellEditable(int row, int col) {
-         if (col < 2) {
+         if (col < 2) { // as we have columns 0 and 1
              return true;
          } else {
              return false;
@@ -58,7 +58,7 @@ public class TaskTableModel extends AbstractTableModel {
 
 	public void insertRow(Task task) {
 		this.tasks.add(task);
-		fireTableRowsInserted(tasks.size(), tasks.size());
+		fireTableRowsInserted(tasks.size(), tasks.size()); // last row
 		
 	}
 	

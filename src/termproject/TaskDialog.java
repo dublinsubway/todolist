@@ -88,7 +88,7 @@ public class TaskDialog extends JDialog {
     				TaskDialog.this.errorLabel.setText("Task name cannot be empty.");
     				TaskDialog.this.errorLabel.setVisible(true);
     				valid = false;
-    			} // empty field if end
+    			} // end of empty field if
     			else {
     				try {
     					dateSpinner.commitEdit();
@@ -171,7 +171,6 @@ public class TaskDialog extends JDialog {
 			e.printStackTrace();
 		}
 		timeSpinner.setValue(date);
-		// might optimize later
 		
 	} // end edit constructor
 	
