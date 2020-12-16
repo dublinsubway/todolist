@@ -196,7 +196,7 @@ public class MainWindow extends JFrame implements ActionListener {
 				int row = taskTable.getSelectedRow();
 				if (row >= 0) {
 					Task aTask = tasks.get(row);
-					doneButton.setSelected(aTask.getIsNotActive());
+					doneButton.setSelected(!aTask.isActive());
 				}
 			}
 		});
@@ -234,7 +234,7 @@ public class MainWindow extends JFrame implements ActionListener {
 					setBackground(Color.BLUE);
 				}
 				else {
-					if (aTask.getIsNotActive() == true) // if set as done
+					if (!aTask.isActive()) // if set as done
 						setBackground(Color.LIGHT_GRAY);
 					else if (aTask.getDueDate().isBefore(currentDate)) // past deadline
 						setBackground(Color.RED);
@@ -294,18 +294,18 @@ public class MainWindow extends JFrame implements ActionListener {
 		} else if (e.getSource() == doneButton || e.getSource() == doneMenuButton) {
 			/*
 			 * Even though that is a checkbox, it listens to the boolean variable in task class. 
-			 * If it is set to true - task is done, so it is being moved to the end of the list.
+			 * If it is set to false - task is done, so it is being moved to the end of the list.
 			 * Otherwise list is being sorted again to put task where it belongs.
 			 */
 			int row = taskTable.getSelectedRow();
 			if (row != -1) {
 				Task aTask = tasks.get(row);
-				if (aTask.getIsNotActive()) {
-					aTask.setIsNotActive(false);
+				if (!aTask.isActive()) {
+					aTask.setActive(true);
 					tableModel.updateRow(row, aTask);
 				}	
 				else {
-					aTask.setIsNotActive(true);
+					aTask.setActive(false);
 					tableModel.updateRow(row, aTask);
 					while (row < tasks.size() - 1) {
 						Task bottomTask = tasks.get(row + 1);

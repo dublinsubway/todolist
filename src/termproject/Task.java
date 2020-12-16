@@ -11,12 +11,12 @@ public class Task implements Comparable<Task>, Serializable {
 	private static final long serialVersionUID = 1L;
 	private String description;
 	private LocalDateTime dueDate;
-	boolean isNotActive;
+	boolean active;
 	
 	public Task(String desc, LocalDateTime dt) {
 		this.description = desc;
 		this.dueDate = dt;
-		this.isNotActive = false;
+		this.active = true;
 	}
 
 	public String getDescription() {
@@ -35,17 +35,17 @@ public class Task implements Comparable<Task>, Serializable {
 		this.dueDate = dueDate;
 	}
 	
-	public boolean getIsNotActive() {
-		return this.isNotActive;
+	public boolean isActive() {
+		return this.active;
 	}
 	
-	public void setIsNotActive(boolean aa) {
-		this.isNotActive = aa;
+	public void setActive(boolean aa) {
+		this.active = aa;
 	}
 	
 	@Override
 	  public int compareTo(Task t) {
-		if (isNotActive) {
+		if (!active) {
 			LocalDateTime notActiveDate = LocalDateTime.of(9999, 12, 1, 10, 00);
 			return notActiveDate.compareTo(t.getDueDate());
 		}
