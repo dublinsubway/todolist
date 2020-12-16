@@ -312,9 +312,9 @@ public class MainWindow extends JFrame implements ActionListener {
 						tasks.set(row + 1, tasks.get(row));
 						tasks.set(row, bottomTask);
 						row++;
-					}
+					} // end while
 				} // end else if
-				sortByDate();
+				sortByDate(); // Collections.sort(tasks);
 				tableModel.fireTableDataChanged();
 			} // end -1 if
 		} else if (e.getSource() == saveButton || e.getSource() == saveMenuButton) {
@@ -336,6 +336,10 @@ public class MainWindow extends JFrame implements ActionListener {
 					ObjectOutputStream oos = new ObjectOutputStream(fos)
 					){
 				oos.writeObject(tasks);
+				JOptionPane.showMessageDialog(MainWindow.this,
+						"Save successful.",
+						"Save status",
+						JOptionPane.PLAIN_MESSAGE);
 			} catch (FileNotFoundException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
