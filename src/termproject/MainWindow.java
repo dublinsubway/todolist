@@ -159,6 +159,7 @@ public class MainWindow extends JFrame implements ActionListener {
 		
 		helpMenu.add(helpMenuButton);
 		helpMenuButton.addActionListener(f1Action);
+		
 		// simple about message
 		helpMenu.add(aboutMenuButton);
 		aboutMenuButton.addActionListener(new ActionListener() {

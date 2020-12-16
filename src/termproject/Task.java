@@ -39,17 +39,17 @@ public class Task implements Comparable<Task>, Serializable {
 		return this.active;
 	}
 	
-	public void setActive(boolean aa) {
-		this.active = aa;
+	public void setActive(boolean newActive) {
+		this.active = newActive;
 	}
 	
 	@Override
-	  public int compareTo(Task t) {
-		if (!active) {
-			LocalDateTime notActiveDate = LocalDateTime.of(9999, 12, 1, 10, 00);
-			return notActiveDate.compareTo(t.getDueDate());
-		}
+	  public int compareTo(Task o) {
+		if (!active && o.isActive())
+			return 1;
+		else if (active && !o.isActive())
+			return -1;
 		else
-			return this.dueDate.compareTo(t.getDueDate());
+			return this.dueDate.compareTo(o.getDueDate());
 	  }
 }
