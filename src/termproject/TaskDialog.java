@@ -90,7 +90,7 @@ public class TaskDialog extends JDialog {
     				valid = false;
     			} // end of empty field if
     			else {
-    				try {
+    				try { // adjust data into date format if entered manually
     					dateSpinner.commitEdit();
     					timeSpinner.commitEdit();
     				} catch (java.text.ParseException ex) {
@@ -117,16 +117,14 @@ public class TaskDialog extends JDialog {
     				} // end before if 
     				
     				String taskInfo = descriptionTextField.getText();
-    				if (valid && position == -2) {
-    					parent.insertRow(new Task(taskInfo, date));
-    					TaskDialog.this.dispose(); // closes the dialog
-    					parent.sortByDate();
-    				} else if (valid && position >= 0) {
-    					parent.updateRow(new Task(taskInfo, date), position);
-    					TaskDialog.this.dispose(); // closes the dialog
+    				if (valid) {
+    					if (position == -2) // if a new task is created (default value of position)
+    						parent.insertRow(new Task(taskInfo, date));
+    					else if (position >= 0) // if task is edited
+    						parent.updateRow(new Task(taskInfo, date), position);
+    					TaskDialog.this.dispose(); 
     					parent.sortByDate();
     				}
-    				
     				
     			} // else if field isnt empty end
     			

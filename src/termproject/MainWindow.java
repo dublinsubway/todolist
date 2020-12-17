@@ -74,7 +74,7 @@ public class MainWindow extends JFrame implements ActionListener {
 	private TaskTableModel tableModel = new TaskTableModel(tasks);
 	private JTable taskTable = new JTable(tableModel) {
 		/**
-		 * 
+		 *  Allows the tooltip to appear when task is highlighted.
 		 */
 		private static final long serialVersionUID = 1L;
 		public boolean editCellAt(int row, int column, java.util.EventObject e) {
@@ -215,7 +215,7 @@ public class MainWindow extends JFrame implements ActionListener {
 			}
 		});
 
-		taskTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() { // a что а как
+		taskTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
 			/**
 			 * This is used to color background of the tables depending on date.
 			 */
