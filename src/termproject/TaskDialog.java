@@ -35,7 +35,7 @@ public class TaskDialog extends JDialog {
 	private JLabel dateSpinnerLabel = new JLabel("Deadline date:");
 	private JLabel timeSpinnerLabel = new JLabel("Deadline time:");
 	private Calendar calendar = Calendar.getInstance();
-	private JButton okButton = new JButton("Add");
+	private JButton okButton = new JButton("OK");
 	private JButton cancelButton = new JButton("Cancel");
 	private MainWindow parent;
 	private JSpinner dateSpinner;
